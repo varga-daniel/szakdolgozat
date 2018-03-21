@@ -16,7 +16,7 @@ Ha a gyakorlati projekt legfrissebb verzióját szeretné megtekinteni, akkor na
 git clone https://github.com/varga-daniel/rozsda-ide.git
 ```
 
-Mind a szakdolgozat mappájában, mint a gyakorlati projekt főjegyzékében van egy újabb `README.md` fájl, ami bővebben beszél a megadott témáról.
+Mind a szakdolgozat mappájában, mind a gyakorlati projekt főjegyzékében van egy újabb `README.md` fájl, ami bővebben beszél a megadott témáról.
 
 ### A repository beszerzése
 
@@ -28,4 +28,4 @@ Ennek elkerülése végett a repository, és minden más almodulként beépítet
 git clone --recurse-submodules https://github.com/varga-daniel/szakdolgozat.git
 ```
 
-paranncsal.
+paranccsal.
