@@ -1,0 +1,3 @@
+[submodule "rozsda-ide"]
+	path = rozsda-ide
+	url = https://github.com/varga-daniel/rozsda-ide
