@@ -17,6 +17,30 @@ majd bemutatjuk a Rust olyan egyedi tulajdonságait, amik az összehasonlításb
 A nyelv 2006-ban nőtt ki Mozilla alkalmazott Graydon Hoare egy személyes pro\-jekt\-jé\-ből,\cite{oldpage:faq:project}.
 Bár a nyelv nevének eredetére nem emlékszik, azt állítja, hogy a projekt a nevét a rozsdagombák családja után kapta.\cite{rust:name}
 
+Mozilla 2009-ben kezdte el támogatni a projektet, mikor Graydon Hoare bemutatta a Rust prototípusát az akkori menedzserének.\cite{interview:graydon} 
+Mozilla érdeklődését akkor keltette fel a projekt, amikor a nyelv már eléggé érett volt ahhoz, hogy bemutassa a fő koncepcióit, és teszteket lehessen rajta futtatni,\cite{oldpage:faq:project} 
+majd felállított egy csapatot, aminek feladata az volt, hogy a nyelven tovább dolgozzon azzal a céllal, hogy beépíthessék azt az akkor fejlesztés allatt álló Servo projektjükbe.\cite{oldpage:faq:project, interview:graydon}
+A projektet 2010-ben kiáltotta ki Mozilla.\cite{talk:servo}
+Még ugyanabban az évben a csapat fókuszt váltott, és az eredeti OCaml-ben írott fordító helyett elkezdtek dolgozni egy önmagát lefordítani képes fordítón, Rustban.\cite{rust:compilerwork}
+Ez a fordító a \texttt{rustc} nevet kapta, és 2011-ben le is fordította magát sikeresen.\cite{rust:successful_compile} A \texttt{rustc} LLVM-et használ backend-ként.
+
+A Rust fordító első számotott pre-alfa kiadása 2012. januárjában jött ki.\cite{rust:first_release}
+A fejlesztők 2015. május 15-én adták ki a Rust 1.0-át, a nyelv és fordító első stabilis kiadását.\cite{rust:1_0:blog, rust:version_history}
+Az 1.0-ás kiadás után további kiadások hat hetente történnek, és emellett fut két további fejlesztési ág is, az alfa és a béta ágak, szintúgy hat hetes időtartamokkal.\cite{rust:release_cycle}
+Ez a rendszer megakadályozza, hogy nem stabilis funkciók kerüljenek a nyelve.\cite{rust:stability}
+
+A Rust objektum-rendszere sokat változott az első verziókban. A 0.2-es verzió osztályokatt hozott a nyelvbe, amit aztán a 0.3-as verzió tovább fejlesztett a destruktorok és az interfészek által nyújtott polimorfizmusi lehetőségekkel.
+A 0.4-es verzió végül lecserélte az osztályokat struktúrákra, behozott egy tulajdonság (trait) rendszert a öröklődés lehetőségének biztosítására, 
+beleolvasztotta az interfészeket a tulajdonságokba (és eltörölte azokat, mint különálló funkció).\cite{rust:version_history}
+
+A 0.9-es és 0.11-es verziók között a Rust rendelkezett két beépített mutató típussal, \texttt{\~} és \texttt{@}, hogy leegyszerűsítse a fő memória modellt.
+Ezeket a 0.11-es verzióban lecserélték a \texttt{Box} és a \texttt{Gc} (majd a \texttt{Gc} eltűnt a 0.12 verzióban).\cite{rust:version_history}
+
+2014. januárjában, Andrew Binstock, a Dr Dobb's főszerkesztője, megemlítette a nyelvet, és megjegyezte, hogy van esélye versenyképesnek lenni a C++ mellett.
+Binstock szerint bár a Rust-ot sokan gondolták "kitűnően elegáns nyelvnek," a nyelv használata lelassult, mert gyakran változott verziók között.\cite{dr_dobb}
+
+A Stack Overflow weboldal éves kérdőíve szerint a Rust 2015-ben a harmadik legkedveltebb nyelv volt, majd a következő három évben az első helyet foglalta el.\cite{so_2015, so_2016, so_2017, so_2018}
+
 \Section{Összehasonlítás a C++ nyelvvel}
 
 \Section{A Rust további egyedi tulajdonságai}
