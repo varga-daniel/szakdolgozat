@@ -43,6 +43,40 @@ A Stack Overflow weboldal éves kérdőíve szerint a Rust 2015-ben a harmadik l
 
 \Section{Összehasonlítás a C++ nyelvvel}
 
+A következőekben elemzünk néhány gyakori problémát illetve kihívást, ami feljöhet egy program fejlesztése során,
+és megvizsgáljuk, hogy hogyan kezeli a megadott feladatot a Rust és a C++, és hogy miben hasonlóak és különböznek.
+
+\SubSection{Költségnélküli absztrakció}
+
+Ha a kódban az absztrakció nem költségnélküli, akkor a programozó hajlamosabb a kód-duplikációra, hogy elkerülje a virtuális metódushívások magas árát.
+Ebben az esetben mindkettő nyelv lehetőséget ad költségnélküli absztrakcióra, ahol lehetséges.\cite{compare:cpp:zerocost, compare:rust:zerocost}
+
+\SubSection{Mozgatás szemantikák}
+
+Mozgatás konstruktorok használata során felmerülhet az a probléma, hogy az az objektum, amiből az erőforrások ki lettek mozgatva,
+helytelen, vagy kiszámíthatatlan maradhat a mozgatás után, ezáltal "használat mozgatás után" (use-after-move) hibákat okozhat.
+A C++ nyelvben a mozgatók "elrabolják" az erőforrásokat az objektumoktól. Ajánlatos, hogy a forrás objektum helyes maradjon a mozgatás után,
+de nem kötelező, így javasolt nem bízni az objektum helyességében mozgatás után.\cite{compare:cpp:move_constructor}
+A Rust birtoklás rendszere és kölcsönzés-ellenőrző funkciója megakadályozza, hogy mozgatás után használhassunk objektumokat.\cite{compare:rust:move_constructor}
+
+A use-after-move hibákat a C++-ban vagy futásidőben lehet felfedezni egy speciális "sentinel" állapottal,
+vagy külső, arra specializálódott programokkal fordítási időben.
+
+\SubSection{Mutatók}
+
+Mindkét nyelv inkább az okos mutatókat és referenciákat preferálja, és a nyers mutatók használata ellen javasol -- 
+a Rust könyv meg is jegyzi, hogy az okos mutatók ötlete a C++-ból ered.\cite{compare:rust:smart_pointers}
+
+Viszont, az, hogy hogy kezelik a nyers mutatókat, eltér. C++-ban nincs különösebb megoldás a nyers mutatók észrevételére,
+kivéve a manuális kód-ellenőrzést.
+A Rust ezzel ellentétben csak az \texttt{unsafe} kódblokkokban enged nyers mutatókat használni. 
+Az ilyen blokkok mindig meg vannak jelölve az \texttt{unsafe} megnevezéssel, így egy egyszerű keresés a fáljokban rámutat, hol lehetnek nyers mutatók.\cite{compare:rust:raw_pointers}
+
+\vskip\baselineskip
+
+Léteznek további különbségek is a két nyelv között, viszont egy alapos összehasonlítás ezen szakdolgozat hatáskörén kívülre esik.
+Egy bővebb összehasonlítás megtekinthető az irodalomjegyzékben megjelölt forrásban.\cite{rustvscpp}
+
 \Section{A Rust további egyedi tulajdonságai}
 
 % TODO: Leírni a nyelv szerepét, létrejöttének történetét, jellemző felhasználási módjait!
