@@ -6,6 +6,8 @@
 
 % TODO: Specifikálni kell az elkészítendő szoftvert!
 
+\Section{Követelmények}
+
 Ahhoz, hogy egy felhasználó-barát fejlesztőkörnyezetet készítsünk, fontos, hogy ne feledjük, hogy egy \emph{környezetet} készítünk: 
 azaz, az IDE-nek magában kell, hogy foglaljon mindent, ami szükséges lehet szoftverfejlesztéshez Rust-ban, legalább a standard könyvtár kezelése során. 
 Ebből következőleg az IDE fő célja az kell, hogy legyen, hogy a felhasználónak a lehető legkevesebbet kelljen az fejlesztői környezetét elhagyni -- 
@@ -65,3 +67,55 @@ A szükséges funkciók a következők:
 	Hasonlóképpen a \emph{Visual Studio}-hoz, legyen lehetőség saját parancsok létrehozására, amikkel a felhasználó tetszőleges programokat hívhat meg. 
 	Ezeket a kényelem kedvéért az IDE beillesztheti egy menübe, így a parancs meghívása nem igényelne, csak néhány kattintást.
 \end{itemize}
+
+\Section{Specifikáció}
+
+\SubSection{Külső követelmények}
+
+Mivel egy grafikus szoftvert szeretnénk létrehozni, ezért legelőször egy widget könyvtárat kell megállapítani alapkövetelményként.
+A Rust widget-ökoszisztémája még nem fejlett, ezért nincs nagyon sok választási lehetőség: főként a GTK és a Qt.
+Végül is a GTK widget könyvtár mellett döntöttem, mert sokkal érettebb a Qt binding könyvtárakhoz képest.
+
+Ha GTK, akkor szeretnénk a \texttt{GTKSourceView} projektet is függőséggé tenni, 
+mivel ez lehetőséget ad a könnyű kódszerkesztő létrehozására -- ez egy kibővített \texttt{GTKTextView} pontosan kódkezelésre,
+és támogat viszonylag sok programozási nyelvet, köztük a Rust-ot is.
+Emellett automatikusan számolja a sorokat, kiszínezi a megadott nyelv kulcsszavait, 
+kezeli a fehérhelyeket és behúzásokat kódnak megfelelően, és sok más.
+Fontos, hogy a \texttt{GTKSourceView} támogatás csak a Rust-GTK \texttt{v3\_22} verziójától elérhető.
+
+A \texttt{GTKSourceView}-ben lévő szöveg kirajzolásához szükséges lesz a \texttt{Pango} könyvtár behívása.
+Egyelőre itt további követelmény vagy érdekesség nincs -- viszont, ha később azt szeretnénk, 
+hogy a dokumentációt ne külső webböngészőben jelenítsük meg, hanem a programon belül, akkor több haszna is lehet ennek a könyvtárnak.
+
+A billentyűkombinációkhoz szükséges lesz behívni a \texttt{GDK} könyvtárat, hogy az ablak által kapott
+billentyű-lenyomás jelzéseket elkaphassuk, feldolgozhassuk, és értelmezhessük.
+
+Végül, szükséges lesz egy könyvtár, aminek segítségével össze tudunk hasonlítani két szövegblokkot.
+Erre egy megoldás a SHA kriptográfiai függvény, aminek egy SHA-3 implementációját a \texttt{tiny-keccak} könyvtár szolgáltatja.
+
+Összességében, a következő Rust "ládákra" (Rust csomagokra) lesz szükségünk a minimális funckiókhoz:
+
+\begin{itemize}
+	\item \texttt{gtk} (\texttt{v3\_22} funkcióval legalább)
+	\item \texttt{gdk}
+	\item \texttt{pango}
+	\item \texttt{sourceview}
+	\item \texttt{tiny-keccak}
+\end{itemize}
+
+\SubSection{A program felépítése}
+
+% Szükség lesz: 
+% - main(), csak elindítja az App-ot
+% - App
+% - std::fs::File, fájlkezeléshez
+% - Valami (ActiveMetaData), ami összehasonlítja a fájl jelenlegi állapotát a lemezen lévőjével
+%   - Ehhez RwLock
+%   - Arc, hogy birtoklás nélkül elérhető legyen az RwLock lambda funkciókban
+%   - Arc használt a teljes képernyő beállításnál is
+% - Gtk::Window, az ablak
+% - Gtk::Header, az ablak teteje
+% - Gtk::ScrolledWindow, a görgetőhöz
+% - Sourceview::View, maga a szerkesztő
+% - Sourceview::Buffer külön, összehasonlításért
+% - Gtk::FileChooserDialog, betöltés & mentés
