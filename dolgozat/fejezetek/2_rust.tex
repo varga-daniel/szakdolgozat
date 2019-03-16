@@ -79,6 +79,27 @@ Egy bővebb összehasonlítás megtekinthető az irodalomjegyzékben megjelölt 
 
 \Section{A Rust további egyedi tulajdonságai}
 
+A Cargo egy Rustban írt, és Rusthoz készült, csomagkezelő, és egyben egy fejlesztést elősegítő környezet.
+A Cargo segítségével automatikusan letölthetőek a szükséges dependenciák, kényelmesen lefordíthatóak a projektek,
+sőt, a Cargo lehetővé teszi a kész projekt feltöltését a Rust közösség csomaggyűjtő oldalára, a \url{crates.io} weboldalra is.\cite{cargo:doc}
+
+A Cargo-t Carl Lerche és Yehuda Katz tervezte a Bundler és NPM mintájára. 
+A csomagkezelés bonyolult probléma, de annak köszönhetően, hogy a Cargo elődjei már kitapasztalták a gyakori fájdalompontokat,
+a Cargo egyszerűvé teszi a projektkezelést:\cite{cargo:blog}
+
+\begin{itemize}
+    \item A \url{crates.io} oldala könnyeddé teszi a projektek feltöltését. 
+    A feltöltéshez csak egy Github felhasználó szükséges, és a feltöltés folyamatát a \texttt{cargo publish} parancs
+    felhasználói beavatkozás nélkül véghezviszi.
+    
+    \item Minden Cargo-t használó projekt függőségeit a Cargo egy \texttt{Cargo.lock} fájlban tárolja,
+    így biztosítva azt hogy mind az együttműködő fejlesztők, és mind a felhasználók ugyanazt a kódot fordítják.
+
+    \item Minden projekt megadhatja a Cargo-nak, hogy fordítsa azt, és a Cargo kezeli a függőségek lefordítását is
+    ugyanezen alapon.
+\end{itemize}
+
+
 % TODO: Leírni a nyelv szerepét, létrejöttének történetét, jellemző felhasználási módjait!
 
 % TODO: Röviden összehasonlítani a C/C++ nyelvekkel (és még a többi olyannal amivel aktuálisan lehet).
