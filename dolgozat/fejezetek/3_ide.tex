@@ -106,9 +106,9 @@ Erre egy megoldás a SHA kriptográfiai függvény, aminek egy SHA-3 implementá
 \SubSection{A program felépítése}
 
 A program központi eleme egy \texttt{App} struktúra lesz. 
-Ez tárolja majd a referenciát a program egyetlen ablakára (\texttt{GtkWindow}), a fejlécre (\texttt{GtkHeader})
+Ez tárolja majd a referenciát a program egyetlen ablakára (\texttt{Window}), a fejlécre (\texttt{Header})
 és a tartalomra.
-A tartalom egy hasonló struktúra az \texttt{App}-hoz, ami egy konténert és magát a szövegszerkesztő \texttt{GtkSourceView}-et tartalmazza.
+A tartalom egy hasonló struktúra az \texttt{App}-hoz, ami egy tárolót és magát a szövegszerkesztő \texttt{SourceView}-et tartalmazza.
 
 Mivel fájlokat akarunk kezelni, ezért szükségünk lesz a Rust standard könyvtárából a \texttt{File} struktúrára
 az \texttt{fs} ("filesystem") modulból.
@@ -149,6 +149,39 @@ Az \texttt{Arc} működése tekinthető hasonlónak a mutatókhoz szemétgyűjt�
 Az \texttt{Arc} struktúrát még egy másik helyen használjuk, a teljes képernyős mód kezelésénél.
 A használati ok megegyezik az előzővel, annyi különbséggel, hogy itt most egy \texttt{AtomicBool} struktúrát csomagolunk be.
 Az \texttt{AtomicBool} egy szál-biztonságos \texttt{boolean} változó.
+
+Az alfejezett elején röviden említett grafikus felületi elemek esetén nincs sok tennivaló.
+Itt inkább, mint például a \texttt{Window} és a \texttt{Header} esetében, az elemek elhelyezkedése és viselkedése az,
+amit beállítunk.
+A \texttt{Window} csak a \texttt{Header} és a már előbb említett tartalom (továbbiakban \texttt{Content})
+elemeket tartalmazza.
+A \texttt{Header} tartalmazza a \textit{Megnyitás}, \textit{Mentés} és \textit{Mentés Másként} gombokat,
+bár mint azt már említettük, a gombok lenyomásához az \texttt{App} maga rendel akciókat.
+
+A \texttt{Content} rész egy kicsivel érdekesebb.
+Ez tartalmaz egy tárolót és a \texttt{SourceView}-et (igazából egy struktúrát ami azt becsomagolja -- 
+később látjuk, miért).
+Itt tulajdonképpen a tároló eleinte felesleges, hiszen csak egy dolgot tárolunk benne, de későbbi kibővítések
+érdekében benne hagyjuk egyelőre.
+A tárolóban egy \texttt{Source} struktúra magában foglal három elemet: egy \texttt{ScrolledWindow} GTK widgetet,
+ami a második elemet, a \texttt{SourceView}-t tárolja, így görgethetővé téve azt, 
+illetve a \texttt{sourceview} modulból egy \texttt{Buffer} elemet, ami nevéből adódóan szövegpuffer a \texttt{SourceView}-nek.
+Bár lehetőség van arra, hogy a \texttt{SourceView} elemet pufferrel együtt hozzuk létre,
+kinyerni a puffert egy így létrehozott \texttt{SourceView}-ből nehézkes,
+és a mi esetünkben van értelme külön tárolni is, mert mint azt már említettük, a mentés lehetőségek
+a meglévő szöveg keccak hash-jét használják fel annak eldöntésére, hogy a fájl módosult-e.
+
+Végül érdemes még kiemelni a fájl mentés és betöltés folyamatát.
+Ez egy \texttt{File\-Chooser\-Dialog} meghívásával történik, viszont itt belefutunk egy gyakori
+problémába a GTK Rust binding-jaival: mivel nem natív a GTK könyvtára,
+ezért gyakran a Rust szokásainak ellentétesen, vagy azokhoz képest furcsán viselkedik.
+Egyik gyakori eredménye ennek az, hogy valójában a GTK-s elemek csak mutatók a Rust alatt futó
+tényleges GTK-s elemekre\cite{glib:no_need_for_borrows}, így az objektumok klónozása olcsó,
+és a metódushívásaik soha nem igényelnek mutálható kölcsönzéseket.
+Ebben az esetben a \texttt{FileChooserDialog} az egyik olyan GTK Rust elem, ami soha nem pusztul el meghívása után,
+így szükséges nekünk implementálni hozzá a \texttt{Drop} tulajdonságot, de ha már úgy is becsomagoljuk
+saját struktúránkba, akkor ketté is választhatjuk \texttt{SaveDialog} és \texttt{OpenDialog} felugró ablakokká.
+Ez megspórolja nekünk az ablakok újbóli szerkesztését amikor meg kell hívnunk egy \texttt{FileChooseDialog} ablakot.
 
 % Szükség lesz: 
 % - main(), csak elindítja az App-ot
