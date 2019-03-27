@@ -105,6 +105,51 @@ Erre egy megoldás a SHA kriptográfiai függvény, aminek egy SHA-3 implementá
 
 \SubSection{A program felépítése}
 
+A program központi eleme egy \texttt{App} struktúra lesz. 
+Ez tárolja majd a referenciát a program egyetlen ablakára (\texttt{GtkWindow}), a fejlécre (\texttt{GtkHeader})
+és a tartalomra.
+A tartalom egy hasonló struktúra az \texttt{App}-hoz, ami egy konténert és magát a szövegszerkesztő \texttt{GtkSourceView}-et tartalmazza.
+
+Mivel fájlokat akarunk kezelni, ezért szükségünk lesz a Rust standard könyvtárából a \texttt{File} struktúrára
+az \texttt{fs} ("filesystem") modulból.
+A fájlkezelésnél szintúgy ajánlatos az, hogy figyeljük, hogyan érjük el a fájlt.
+Vagy egyszerre csak egy író írhat a fájlba, vagy egyszerre több olvasó olvashat belőle.
+Erre a standard könyvtár \texttt{sync} moduljában létezik az \texttt{RwLock} zár ("reader-writer lock"),
+ami pontosan erre a célra lett létrehozva.
+\texttt{Mutex} itt nem lenne megfelelő, mivel egy \texttt{Mutex} zár nem tesz különbséget írók és olvasók között,
+így akkor is lezárná az erőforrást, ha biztosan tudjuk, hogy az azt éppen elérő olvasó nem módosítaná.
+
+Illetve a felesleges fájlkiolvasások megspórolása érdekében nem a fájl tartalmával fogunk dolgozni főképp.
+Létrehozunk egy \texttt{ActiveMetadata} struktúrát, ami magában tárolja a fájl elérési helyét,
+illetve a legutóbb mentett szöveg keccak hash szummáját.
+A fájl valós tartalmával tulajdonképpen soha nem hasonlítunk össze.
+Ez nem feltétlenül baj, csak fejlettebb szövegszerkesztőknél található olyan funkció, ami felismeri
+egy külső fájl változását, például \textit{Visual Studio Code}.
+Ha mégis probléma, akkor a jövőben kiküszöbölhetjük egy fájl-figyelő rendszer bevezetésével \textit{Visual Studio Code} módjára,
+vagy csak figyelmeztethetjük a felhasználót mentéskor, hogy a fájlt külső programok módosították utolsó mentés óta,
+és felajánlhatunk felülírási és elvetési opciókat.
+
+Szükségünk lesz továbbá megint a \texttt{sync} modulból az \texttt{Arc} struktúrára.
+Ez lehetőséget ad az atomikus referencia-számolásra.
+Számunkra ez azért szükséges, mert az \texttt{App} jelenlegi fájl \texttt{ActiveMetadata}-ját
+a grafikus felület legtöbb elemének el kell érnie.
+A \textit{Mentés}, \textit{Mentés Másként} és \textit{Megnyitás} gombok mind módosítják legalább a keccak-szummát,
+de például az utóbbi kettő esetében a fájl elérési helyét is (hacsak a felhasználó nem ugyanabba a fájlba ment,
+vagy ugyanazt a fájlt nyitja meg).
+A \ref{subsec:ownership_mentioned} részben már említve volt a Rust egyedi birtoklás rendszere.
+Ez megakadályozza, hogy mozgatás után elérjük a mozgatott erőforrást, és a gomblenyomás jelzés
+továbbmozgatná a jelenlegi fájl metaadatokat a meghívott mentés vagy megnyitás metódusba
+(bár igazából a birtoklás rendszer miatt már előbb is megbukna a kód, mert a jelzés-meghívott metódus
+összecsatolás maga szükségessé tenné a metaadat-erőforrás mozgatását).
+Az \texttt{Arc} struktúra \texttt{clone()} metódusa lemásolja az \texttt{Arc} struktúrát,
+viszont a létrejövő struktúra ugyanarra az erőforrásra mutat, és az erőforrásra mutató \texttt{Arc}-ok
+száma nyilván van tartva -- ha már nem mutat semmi az erőforrásra, akkor elpusztul az erőforrás maga is.
+Az \texttt{Arc} működése tekinthető hasonlónak a mutatókhoz szemétgyűjtő mechanizmussal rendelkező nyelvekben.
+
+Az \texttt{Arc} struktúrát még egy másik helyen használjuk, a teljes képernyős mód kezelésénél.
+A használati ok megegyezik az előzővel, annyi különbséggel, hogy itt most egy \texttt{AtomicBool} struktúrát csomagolunk be.
+Az \texttt{AtomicBool} egy szál-biztonságos \texttt{boolean} változó.
+
 % Szükség lesz: 
 % - main(), csak elindítja az App-ot
 % - App
