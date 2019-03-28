@@ -32,7 +32,7 @@ A szükséges funkciók a következők:
 	Mint a legtöbb nyelvben, a Rust-ban is létezik egy \emph{nyelvszerver}, a \emph{Rust Language Server}\cite{rls}. 
 	A nyelvszerver szerepe pontosan ez, így szükséges lesz kommunikáció kiépítése az \emph{RLS}-sel. 
 	Ha valamiért ez nem sikerülne, akkor mi magunk is megoldhatunk egy hasonló funkciót a fordítóprogram és a \emph{racer}\cite{racer} segítségével -- 
-	az RLS maga is ezt csinálja. Ennek ellenére preferáltabb az RLS-sel dolgozó megoldás.
+	az RLS maga is ezt csinálja. Ennek ellenére preferáltabb az RLS-sel dolgozó megoldás.\label{rls}
 	
 	\item Az IDE tudjon elvégezni lintelést, illetve projektformázási javaslatokat. 
 	Az előbbi megvalósítható a \texttt{clippy}\cite{clippy} program segítségével, az utóbbi a \texttt{rustfmt}\cite{rustfmt} programmal.
@@ -103,6 +103,38 @@ Erre egy megoldás a SHA kriptográfiai függvény, aminek egy SHA-3 implementá
 	\item \texttt{tiny-keccak}
 \end{itemize}
 
+Ezen túl, mint már azt \myaref{rls} részben is említettük, a fejlesztőkörnyezeti funkciókhoz szükségünk lesz arra,
+hogy a Rust nyelvszerverével, az RLS-sel kommunikáljunk.
+Lehetne az RLS-t meghívni a kódban könyvtárként, de az LSP-n\cite{lsp} alapuló nyelvszerverek lehetőséget
+adnak a standard bemeneti és kimeneti csatornákon való kommunikációra, 
+így elégséges az, ha gyermekfolyamatként meghívjuk az RLS-t.
+A csatornák kezelésére a Rust standard könyvtára lehetőséget ad az \texttt{io} modul \texttt{stdin()}
+és \texttt{stdout()} metódusokkal.
+Az RLS továbbá követelményként a Rust forráskódját igényli a javaslatok és dokumentáció megjelenítéshez
+a standard könyvtárban lévő struktúrákhoz és metódusokhoz.
+
+Az LSP alapú nyelvszerverek JSON-RPC\cite{json-rpc} távoli-eljáráshívás protokoll alapján kommunikálnak
+a kliens programokkal, ezért szükség lesz egy JSON szerializáló és deszerializáló könyvtárra is.
+Erre a legelterjettebb megoldás a \texttt{serde} könyvtár, vagyis a mi esetünkben a \texttt{serde-json} alkönyvtára.
+
+Ahhoz, hogy az RLS-t használni tudjuk egy Rust projekten, szükségünk lesz a Rust projektek készítésére is.
+Ehhez \myaref{cargo_mention} részben is említett Cargo csomagkezelőt fogjuk használni.
+
+Mind az RLS-t, mind a Cargo-t gyermekfolyamatként kell majd meghívnunk.
+A Rust standard könyvtárában, a \texttt{process} modulban létező \texttt{Command} struktúra
+lehetőséget az a gyermekfolyamatok létrehozására, illetve azok standard bemenetének és kimenetének kezelésére.
+
+Így a fejlesztőkörnyezet szemszögéből az alábbiakkal bővül ki a követelménylista:
+
+\begin{itemize}
+	\item RLS
+	\begin{itemize}
+		\item Rust forráskódja
+	\end{itemize}
+	\item Cargo
+	\item \texttt{serde}(\texttt{-json})
+\end{itemize}
+
 \SubSection{A program felépítése}
 
 A program központi eleme egy \texttt{App} struktúra lesz. 
@@ -136,7 +168,7 @@ a grafikus felület legtöbb elemének el kell érnie.
 A \textit{Mentés}, \textit{Mentés Másként} és \textit{Megnyitás} gombok mind módosítják legalább a keccak-szummát,
 de például az utóbbi kettő esetében a fájl elérési helyét is (hacsak a felhasználó nem ugyanabba a fájlba ment,
 vagy ugyanazt a fájlt nyitja meg).
-A \ref{subsec:ownership_mentioned} részben már említve volt a Rust egyedi birtoklás rendszere.
+Ezelőtt \myaref{subsec:ownership_mentioned} részben már említve volt a Rust egyedi birtoklás rendszere.
 Ez megakadályozza, hogy mozgatás után elérjük a mozgatott erőforrást, és a gomblenyomás jelzés
 továbbmozgatná a jelenlegi fájl metaadatokat a meghívott mentés vagy megnyitás metódusba
 (bár igazából a birtoklás rendszer miatt már előbb is megbukna a kód, mert a jelzés-meghívott metódus
@@ -150,7 +182,7 @@ Az \texttt{Arc} struktúrát még egy másik helyen használjuk, a teljes képer
 A használati ok megegyezik az előzővel, annyi különbséggel, hogy itt most egy \texttt{AtomicBool} struktúrát csomagolunk be.
 Az \texttt{AtomicBool} egy szál-biztonságos \texttt{boolean} változó.
 
-Az alfejezett elején röviden említett grafikus felületi elemek esetén nincs sok tennivaló.
+Az alfejezet elején röviden említett grafikus felületi elemek esetén nincs sok tennivaló.
 Itt inkább, mint például a \texttt{Window} és a \texttt{Header} esetében, az elemek elhelyezkedése és viselkedése az,
 amit beállítunk.
 A \texttt{Window} csak a \texttt{Header} és a már előbb említett tartalom (továbbiakban \texttt{Content})
@@ -183,17 +215,9 @@ Ebben az esetben a \texttt{FileChooserDialog} az egyik olyan GTK Rust elem, ami 
 saját struktúránkba, akkor ketté is választhatjuk \texttt{SaveDialog} és \texttt{OpenDialog} felugró ablakokká.
 Ez megspórolja nekünk az ablakok újbóli szerkesztését amikor meg kell hívnunk egy \texttt{FileChooseDialog} ablakot.
 
-% Szükség lesz: 
-% - main(), csak elindítja az App-ot
-% - App
-% - std::fs::File, fájlkezeléshez
-% - Valami (ActiveMetaData), ami összehasonlítja a fájl jelenlegi állapotát a lemezen lévőjével
-%   - Ehhez RwLock
-%   - Arc, hogy birtoklás nélkül elérhető legyen az RwLock lambda funkciókban
-%   - Arc használt a teljes képernyő beállításnál is
-% - Gtk::Window, az ablak
-% - Gtk::Header, az ablak teteje
-% - Gtk::ScrolledWindow, a görgetőhöz
-% - Sourceview::View, maga a szerkesztő
-% - Sourceview::Buffer külön, összehasonlításért
-% - Gtk::FileChooserDialog, betöltés & mentés
+% Command használata az RLS-hez és a Cargo-hoz
+% stdin() stdout() RLS esetén
+% serde-json
+% - struktúrák készítése a lehetséges RLS válaszok / értesítésekhez
+% - LSP-n utánanézni, mik ezek
+% Cargo new bin/lib, cargo init bin/lib, cargo build, cargo build --release, cargo check, cargo test, cargo bench, cargo doc (--open)
