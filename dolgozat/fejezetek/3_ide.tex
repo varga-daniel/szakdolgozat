@@ -44,7 +44,7 @@ A szükséges funkciók a következők:
 	Továbbá, az IDE-n belül fontos, hogy legyen a projekt fáljrendszerének egy fa-struktúrás reprezentációja, ami segítségével a felhasználó tudjon refaktorálást végezni a fájlokon, vagy a cargo követelményeit betartva hozhasson létre fájlokat 
 	(A Rust 2016-os verziója például megköveteli, hogy a modulmappák 'fő' forrásfájlja a \texttt{mod.rs} nevet kapja).
 	
-	\item Az IDE tudja a projektet megépíteni debuggoláshoz és kiadáshoz, tudja a projekt tesztjeit lefuttatni, és tudja a projekt problémáit leellenőrzni. 
+	\item Az IDE tudja a projektet lefordítani debuggoláshoz és kiadáshoz, tudja a projekt tesztjeit lefuttatni, és tudja a projekt problémáit leellenőrzni. 
 	Ezek viszonylag egyszerű cargo parancsmeghívások, a fontos rész az, hogy ezeket a felhasználó egy gombnyomással vagy billentyűkombinációval meg tudja hívni.
 	
 	\item Az IDE tudjon dokumentációt szolgáltatni a felhasználónak a kód megadott részeiről. 
@@ -215,9 +215,43 @@ Ebben az esetben a \texttt{FileChooserDialog} az egyik olyan GTK Rust elem, ami 
 saját struktúránkba, akkor ketté is választhatjuk \texttt{SaveDialog} és \texttt{OpenDialog} felugró ablakokká.
 Ez megspórolja nekünk az ablakok újbóli szerkesztését amikor meg kell hívnunk egy \texttt{FileChooseDialog} ablakot.
 
-% Command használata az RLS-hez és a Cargo-hoz
-% stdin() stdout() RLS esetén
-% serde-json
-% - struktúrák készítése a lehetséges RLS válaszok / értesítésekhez
-% - LSP-n utánanézni, mik ezek
-% Cargo new bin/lib, cargo init bin/lib, cargo build, cargo build --release, cargo check, cargo test, cargo bench, cargo doc (--open)
+Miután a grafikus felület elkészült, a program kibővíthető az IDE lehetőségekkel.
+A \texttt{Command} parancshívás-építő struktúra segítségével kommunikálhatunk a programon kívüli világgal.
+A struktúrát főképp két helyen fogjuk használni, az \texttt{App} illetve a \texttt{Content} struktúrákban.
+A Cargo parancsok meghívásának variációit tárolhatjuk az \texttt{App} alatt egy listában,
+mivel a parancsmeghívás-építő nem kötelezi a parancs azonnali meghívását az építés lefolyása után,
+és egy megépített parancs többször is meghívható.
+Továbbá, a Cargo parancshívások argumentumlistái nem változnak túlságosan nagy mértékben,
+hogy azt szükséges legyen minden esetben újraépíteni meghívás előtt memóriatakarékosság érdekében.
+
+A következő alapvető Cargo parancsokat érdemes implementálni:
+
+\begin{itemize}
+    \item \verb+cargo new --bin [név]+: új bináris Cargo projekt készítése. 
+    A megadott név lesz a projekt kezdetleges neve, és egy ilyen nevű almappába kerülnek a minimális Rust projekt fájlok,
+    mint pl. \texttt{Cargo.toml} és \texttt{src/main.rs}.
+    \item \verb+cargo new --lib [név]+: új Cargo könyvtár projekt készítése.
+    Hasonlóan működik a fenti parancshoz, de a \texttt{main.rs} fájl helyett egy \texttt{lib.rs} fájlt hoz létre.
+    \item \verb+cargo build+: hibakereső módban lefordítja a projektet.
+    Ha szükséges, letölti és lefordítja a kellő követelményeket.
+    \item \verb+cargo build --release+: kiadás módban fordítja a projektet.
+    \item \verb+cargo check+: leellenőrzi a projektet és a követleményeit, hogy vannak-e bennük hibák.
+    \item \verb+cargo test+: leellenőrzi a projektben megadott teszteket.
+    \item \verb+cargo bench+: leméri a \verb+#[bench]+ jelzővel ellátott tesztek lefutási idejét.
+    \item \verb+cargo doc+: lefordítja a projektben lévő (publikus) dokumentációt.
+    \item \verb+cargo doc --open+: lefordítja és megnyitja a dokumentációt.
+\end{itemize}
+
+Az RLS-es való kommunikációt a \texttt{Content} struktúra fogja kezelni.
+A \texttt{Source} struktúra egy forrásfájlt kezel, és bár általában a jelenlegi fájlhoz szeretnénk
+nyelvszerver segítséget, a nyelvszervernek tudnia kell az egész projektről a segítség ajánlásához.
+A gyermekfolyamat létrehozásakor az \texttt{.stdout(Stdio::piped())} és az \texttt{.stdin(Stdio::piped())}
+építési módosítókat megadva a gyermekfolyamat be- és kimeneti csatornái elérhetőek a \texttt{child.stdin}
+és a \texttt{child.stdout} struktúrákon keresztül, és ezekből szabadon lehet írni és olvasni a program futása alatt.
+
+A kommunikáció maga a \texttt{serde-json} könyvtár segítségével történik.
+Ez lehetőséget ad struktúrák szerializációjára és deszerializációjára, amit kihasználhatunk úgy,
+hogy az LSP specifikáció\cite{lsp-spec} által definiált gyakori üzeneteket struktúrákként implementáljuk --
+ezzel elkerülve az emberi hiba lehetőségét is a kódban.
+Ha mégis szükségünk lenne egy manuálisan előállított JSON csomagra, akkor a könyvtár lehetőséget ad 
+arra is a \texttt{json!()} makróval.
