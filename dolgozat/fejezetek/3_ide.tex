@@ -245,7 +245,7 @@ A következő alapvető Cargo parancsokat érdemes implementálni:
 Az RLS-es való kommunikációt a \texttt{Content} struktúra fogja kezelni.
 A \texttt{Source} struktúra egy forrásfájlt kezel, és bár általában a jelenlegi fájlhoz szeretnénk
 nyelvszerver segítséget, a nyelvszervernek tudnia kell az egész projektről a segítség ajánlásához.
-A gyermekfolyamat létrehozásakor az \texttt{.stdout(Stdio::piped())} és az \texttt{.stdin(Stdio::piped())}
+A gyermekfolyamat létrehozásakor az \texttt{.stdout(Stdio::piped())} és az\\ \texttt{.stdin(Stdio::piped())}
 építési módosítókat megadva a gyermekfolyamat be- és kimeneti csatornái elérhetőek a \texttt{child.stdin}
 és a \texttt{child.stdout} struktúrákon keresztül, és ezekből szabadon lehet írni és olvasni a program futása alatt.
 
