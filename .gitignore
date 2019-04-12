@@ -5,3 +5,7 @@
 *.pdf
 *.thm
 *.toc
+/dolgozat/dolgozat.bbl
+/dolgozat/dolgozat.blg
+__latexindent_temp.tex
+.vscode/

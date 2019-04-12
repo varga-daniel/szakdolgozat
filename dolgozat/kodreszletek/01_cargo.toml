@@ -1,0 +1,19 @@
+[package]
+name = "rozsda-ide"
+version = "0.0.1"
+authors = ["Varga Daniel <varga.daniel@protonmail.com>"]
+edition = '2018'
+
+[dependencies]
+gdk = "0.10"
+glib = "0.7.1"
+pango = "0.6.0"
+tiny-keccak = "1.4.2"
+
+[dependencies.sourceview]
+features = ["v3_18"]
+version = "0.6.0"
+
+[dependencies.gtk]
+features = ["v3_22"]
+version = "0.6.0"

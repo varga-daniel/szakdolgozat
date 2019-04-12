@@ -213,7 +213,7 @@ tényleges GTK-s elemekre\cite{glib:no_need_for_borrows}, így az objektumok kl�
 Ebben az esetben a \texttt{FileChooserDialog} az egyik olyan GTK Rust elem, ami soha nem pusztul el meghívása után,
 így szükséges nekünk implementálni hozzá a \texttt{Drop} tulajdonságot, de ha már úgy is becsomagoljuk
 saját struktúránkba, akkor ketté is választhatjuk \texttt{SaveDialog} és \texttt{OpenDialog} felugró ablakokká.
-Ez megspórolja nekünk az ablakok újbóli szerkesztését amikor meg kell hívnunk egy \texttt{FileChooseDialog} ablakot.
+Ez megspórolja nekünk az ablakok újbóli szerkesztését amikor meg kell hívnunk egy \texttt{FileChooserDialog} ablakot.
 
 Miután a grafikus felület elkészült, a program kibővíthető az IDE lehetőségekkel.
 A \texttt{Command} parancshívás-építő struktúra segítségével kommunikálhatunk a programon kívüli világgal.
