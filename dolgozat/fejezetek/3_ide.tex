@@ -190,6 +190,7 @@ elemeket tartalmazza.
 A \texttt{Header} tartalmazza a \textit{Megnyitás}, \textit{Mentés} és \textit{Mentés Másként} gombokat,
 bár mint azt már említettük, a gombok lenyomásához az \texttt{App} maga rendel akciókat.
 
+\label{content:talk}
 A \texttt{Content} rész egy kicsivel érdekesebb.
 Ez tartalmaz egy tárolót és a \texttt{SourceView}-et (igazából egy struktúrát ami azt becsomagolja -- 
 később látjuk, miért).
@@ -255,3 +256,11 @@ hogy az LSP specifikáció\cite{lsp-spec} által definiált gyakori üzeneteket 
 ezzel elkerülve az emberi hiba lehetőségét is a kódban.
 Ha mégis szükségünk lenne egy manuálisan előállított JSON csomagra, akkor a könyvtár lehetőséget ad 
 arra is a \texttt{json!()} makróval.
+
+Az RLS által megkapott kitöltési információkat a \texttt{SourceView}-t kiszolgáló 
+\texttt{Source\-Completion} GTK osztály ajánlja fel a felhasználónak.
+Ehhez párosítható egy, vagy több \texttt{Source\-Completion\-Provider} implementáló, 
+amiknek feladata a javaslatok tényleges összegyűjtése.
+A mi esetünkben az RLS által kapott javaslatokat egy ilyen \texttt{Provider} által javasolhatjuk,
+illetve mellette megadhatjuk a \texttt{SourceCompletionWords} GTK osztályt is, ami egy megadott szövegből javasol szavakat,
+ha valamiért az RLS-es javaslatok megbuknának.

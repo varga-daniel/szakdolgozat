@@ -38,6 +38,8 @@ projekt verziószámától).
 
 \SubSection{Az \texttt{App} és a \texttt{SourceView}}
 
+\subsubsection{Az \texttt{ui} modul}
+
 A felhasználói felülettel kapcsolatos forráskódokat az olvashatóság kedvéért egy modulba tesszük,
 az \texttt{ui} modulba.
 A modulkészítés a Rust 2018-as kiadásában forrásfájlokon alapul -- 
@@ -57,7 +59,9 @@ A \texttt{use} kulcsszó behívja a megadott struktúrát és metódusait a forr
 míg a \texttt{pub} nyilvánossá, azaz modulon kívül elérhetővé teszi a struktúrát.
 Ezt \textit{újraexportálásnak} (re-export) hívják a Rust nyelvben.
 
-Következőnek az \texttt{ui/app.rs}-t bővítjük ki:
+\subsubsection{Az applikáció}
+
+Következőnek az \texttt{ui/app.rs}-t hozzuk létre:
 
 \lstinputlisting[firstline=13, lastline=42, language=Rust]{./kodreszletek/01_app.rs}
 
@@ -86,6 +90,63 @@ Ennek ellenére a zárvány paraméterei névtelenek maradtak azért, mert nem h
 A zárvány tartalma ehhez képest egyszerű.
 Meghívjuk a GTK rendszer kilépő metódusát, majd visszatérünk egy hamis értékű \texttt{Inhibit} struktúrapéldánnyal --
 Nem kell a jelzést tovább küldeni, a programot már bezárásra késztettük.
+
+\subsubsection{Az ablak fejléce}
+
+A következő legegyszerűbb része a programnak a fejléc elkészítése.
+A fejlécen fog szerepelni az első verziókban a \textit{Megnyitás,} \textit{Mentés,} és \textit{Mentés Másként}
+gombok, továbbá a megnyitott fájl neve,
+illetve a későbbiekben itt lesznek az általában elvárt \textit{Fájl,} \textit{Szerkesztés,} és egyéb menük.
+
+Az újonnan elkészített \texttt{ui/header.rs} tartalma tehát a következő lesz:
+
+\lstinputlisting[firstline=46, lastline=72, language=Rust]{./kodreszletek/01_app.rs}
+
+Itt semmi különös nincs, ami csak is a Rust-ra lenne jellemző.
+Ami talán furcsának tűnhet, az az, hogy a fordító program nem dob ki hibát,
+hogy a \texttt{Header} struktúra nem él addig, hogy utána az később felhasználható legyen.
+Hasonló az eset az előbbi \texttt{App::new()} metódushoz.
+Figyelembe kell venni, hogy a \texttt{new()} metódus \textit{asszociált metódus} --
+nem a \texttt{Header} metódusa, de azzal kapcsolatos (látható, hogy nincs benne \texttt{self}, bármilyen formában).
+
+Továbbá, bár a példány a metóduson belül jött létre, visszatéréskor értékként adjuk a meghívó
+kódrésznek a példányt, nem referenciaként.
+Ezt láthatjuk a metódus visszatérési értékéből (\verb+-> Header+), 
+illetve a metódus utolsó sorából is.
+A Rust-ban a \texttt{return} utasítás megspórolható a pontosvessző elhagyásával.
+Ez azért lehetséges, mert a Rust-ban a metódus visszatérési értéke a benne legutoljára végrehajtott kifejezés.
+A pontosvessző hozzáadása egy kifejezéshez azt egy utasítássá teszi.
+
+A \texttt{Header} létrejöttével a következőkkel bővül az \texttt{ui/app.rs}:
+
+\lstinputlisting[firstline=76, lastline=88, language=Rust]{./kodreszletek/01_app.rs}
+
+A \texttt{Header}-t létrehozzuk, és beállítjuk az ablakunk címsorának.
+Előtte persze behívjuk az \texttt{App} moduljába.
+
+A \texttt{super} itt az \texttt{ui} modulra utal, ezért nem szabad elfelednünk az \texttt{ui.rs}
+fájlban sem az újraexportálást.
+
+\lstinputlisting[firstline=92, lastline=98, language=Rust]{./kodreszletek/01_app.rs}
+
+\subsubsection{A kódszerkesztő}
+
+Ezek után itt az ideje elkészíteni a kódszerkesztő részt magát.
+Az \verb+ui/source_view.rs+ létrehozzuk a \texttt{SourceView} példányát,
+beleépítve kezelő-struktúrákba:
+
+\lstinputlisting[firstline=102, lastline=144, language=Rust]{./kodreszletek/01_app.rs}
+
+Ebben a kódrészletben a legtöbb döntést már tárgyaltuk \myaref{content:talk} részben.
+A megbeszélteken kívül behoztunk egy \texttt{configure()} asszociált metódust is,
+aminek szerepe, hogy a puffert és a kódszerkesztőt beállítsa a Rust nyelvhez.
+
+A legtöbb beállítás kinézeti volt, ezért nincsenek említve a kódrészletben.
+A fontosabb kódszerkesztővel kapcsolatos beállítások az a fix szélességű betűtípus beállítása,
+illetve a szókiegészítés engedélyezése.
+
+A pufferhez létrehoztunk egy nyelvkezelő struktúrát, ami a Rust nyelv alapján kezeli a puffert.
+A GTK külső források nélkül is támogatja a Rust nyelvet a \texttt{LanguageManager} struktúrában.
 
 % TODO:
 % - Main (externeket kiemelni, hogy nincsenek)
