@@ -41,7 +41,7 @@ A szükséges funkciók a következők:
 	Ez alatt az is értetendő, hogy a felhasználó létre tudjon hozni cargo projekteket az IDE-n keresztül, illetve hogy be tudjon tölteni régi cargo projekteket az IDE-be. 
 	Fontos, hogy csak az számítson, hogy a betöltött projekt cargo-val lett létrehozva, ne az, hogy az IDE által. 
 	Az IDE tárolhat információkat a projektról egy rejtett mappában, de ne legyen kötelező a projekt módosításához. 
-	Továbbá, az IDE-n belül fontos, hogy legyen a projekt fáljrendszerének egy fa-struktúrás reprezentációja, ami segítségével a felhasználó tudjon refaktorálást végezni a fájlokon, vagy a cargo követelményeit betartva hozhasson létre fájlokat 
+	Továbbá, az IDE-n belül fontos, hogy legyen a projekt fájlrendszerének egy fa-struktúrás reprezentációja, ami segítségével a felhasználó tudjon refaktorálást végezni a fájlokon, vagy a cargo követelményeit betartva hozhasson létre fájlokat 
 	(A Rust 2016-os verziója például megköveteli, hogy a modulmappák 'fő' forrásfájlja a \texttt{mod.rs} nevet kapja).
 	
 	\item Az IDE tudja a projektet lefordítani debuggoláshoz és kiadáshoz, tudja a projekt tesztjeit lefuttatni, és tudja a projekt problémáit leellenőrzni. 
@@ -151,6 +151,7 @@ ami pontosan erre a célra lett létrehozva.
 \texttt{Mutex} itt nem lenne megfelelő, mivel egy \texttt{Mutex} zár nem tesz különbséget írók és olvasók között,
 így akkor is lezárná az erőforrást, ha biztosan tudjuk, hogy az azt éppen elérő olvasó nem módosítaná.
 
+\label{active_metadata}
 Illetve a felesleges fájlkiolvasások megspórolása érdekében nem a fájl tartalmával fogunk dolgozni főképp.
 Létrehozunk egy \texttt{ActiveMetadata} struktúrát, ami magában tárolja a fájl elérési helyét,
 illetve a legutóbb mentett szöveg keccak hash szummáját.
@@ -204,6 +205,7 @@ kinyerni a puffert egy így létrehozott \texttt{SourceView}-ből nehézkes,
 és a mi esetünkben van értelme külön tárolni is, mert mint azt már említettük, a mentés lehetőségek
 a meglévő szöveg keccak hash-jét használják fel annak eldöntésére, hogy a fájl módosult-e.
 
+\label{file_chooser_dialog}
 Végül érdemes még kiemelni a fájl mentés és betöltés folyamatát.
 Ez egy \texttt{File\-Chooser\-Dialog} meghívásával történik, viszont itt belefutunk egy gyakori
 problémába a GTK Rust binding-jaival: mivel nem natív a GTK könyvtára,
@@ -211,7 +213,7 @@ ezért gyakran a Rust szokásainak ellentétesen, vagy azokhoz képest furcsán 
 Egyik gyakori eredménye ennek az, hogy valójában a GTK-s elemek csak mutatók a Rust alatt futó
 tényleges GTK-s elemekre\cite{glib:no_need_for_borrows}, így az objektumok klónozása olcsó,
 és a metódushívásaik soha nem igényelnek mutálható kölcsönzéseket.
-Ebben az esetben a \texttt{FileChooserDialog} az egyik olyan GTK Rust elem, ami soha nem pusztul el meghívása után,
+Ebben az esetben a \texttt{FileChooserDialog} az egyik olyan GTK Rust elem, ami soha nem pusztul el meghívása után magától,
 így szükséges nekünk implementálni hozzá a \texttt{Drop} tulajdonságot, de ha már úgy is becsomagoljuk
 saját struktúránkba, akkor ketté is választhatjuk \texttt{SaveDialog} és \texttt{OpenDialog} felugró ablakokká.
 Ez megspórolja nekünk az ablakok újbóli szerkesztését amikor meg kell hívnunk egy \texttt{FileChooserDialog} ablakot.

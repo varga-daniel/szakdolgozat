@@ -2,7 +2,7 @@
 
 \graphicspath{{./kepek/}}
 
-\Section{Minimális program: egy fáljt kezelő kódszerkesztő}
+\Section{Minimális program: egy fájlt kezelő kódszerkesztő}
 
 \includegraphics[width=\textwidth]{program-mvp}
 
@@ -148,15 +148,94 @@ illetve a szókiegészítés engedélyezése.
 A pufferhez létrehoztunk egy nyelvkezelő struktúrát, ami a Rust nyelv alapján kezeli a puffert.
 A GTK külső források nélkül is támogatja a Rust nyelvet a \texttt{LanguageManager} struktúrában.
 
+A \texttt{Content} struktúrához létrehozunk egy \texttt{new()} metódust, ami egyszerűen csak
+belehelyezi a \texttt{Source} tárolóját a \texttt{Content} tárolójába.
+
+Ezután az \texttt{App}-ban hozzáadjuk a \texttt{Content} struktúrát az ablakhoz.
+
+\lstinputlisting[firstline=148, lastline=148, language=Rust]{./kodreszletek/01_app.rs}
+
+\SubSection{Mentés metódus és a fájlválasztó felugró ablak}
+
+Ahhoz, hogy a fájlmentést létrehozzuk, szükségünk lesz először egy rendszerre, ami megállapítja,
+hogy az éppen szerkesztett fájl, és az, ami a háttértáron szerepel, ugyanaz-e.
+Erre \myaref{active_metadata} részben említett \texttt{ActiveMetadata} struktúrát készítjük el,
+és használjuk fel.
+
+A \texttt{main.rs} fájlunk mellé behozunk egy \texttt{state.rs} fájlt, amiben a betöltött
+fájl állapotát kezeljük.
+
+\lstinputlisting[firstline=3, lastline=29, language=Rust]{./kodreszletek/02_save.rs}
+
+A legtöbb metódus ebben a fájlban magától értetődő.
+Az \texttt{ActiveMetadata} struktúrának két adattagja van, egy útvonalpuffer,
+ami a fájl elérési helyére mutat, illetve egy 64 elem hosszú, 8-bites nemnegatív egész számokból álló tömb,
+ami egy 512 rátás Keccak algoritmus eredményét tartalmazza, a fájl tartalmának bemenetével.
+
+Említésre méltó a \verb+get_dir()+ metódus, ami kicsit bonyolultabb a Rust sajátosságai miatt.
+A \texttt{Path} és a \texttt{PathBuf} típusok kapcsolata hasonló a \texttt{str} és \texttt{String}
+típusokéhoz: az előbbi nem mutálható, még az utóbbi igen.
+A \texttt{PathBuf} \texttt{parent()} metódusa egy \texttt{Option<Path>} eredménnyel tér vissza --
+ez azért van, mert hasonlóképpen a szövegkezeléshez, itt is érdemesebb nem mutálható adattípusokkal
+visszatérni, ahol lehetséges.
+Az eredmény útvonal továbbá egy \texttt{Option}-ba van becsomagolva, mivel a metódus a programon
+kívüli állapotról tér vissza információval, és annak helyességét nem tudja biztosítani
+(például, a program indítása és a metódus meghívása között elveszettük az olvasási jogot a fájl
+könyvtárához, vagy valami kiszámíthatatlan hiba történt).
+Ezen kívül kötelesek vagyunk nem félrevezetni a \verb+get_dir()+ metódus felhasználóit,
+ezért nem csomagolhatjuk ki az útvonalat az \texttt{Option}-ből --
+ha hiba történt, akkor azt a meghívó lekezeli.
+Viszont, egy \texttt{Option}-ön belül a \texttt{Path}-ot átkonvertálhatjuk \texttt{PathBuf}-ra 
+egy \texttt{map()} meghívás segítségével, ami kicsomagolás nélkül meghívja az általunk megadott
+metódust a belső értékre.
+Ha pedig a belső érték \texttt{None} (a Rust-ban a legközelebbi érték a \texttt{null}-hoz),
+akkor semmi nem történik, és a \texttt{None} érték hiba nélkül továbbmegy.
+
+Ahhoz, hogy menteni tudjunk, továbbá el kell készítenünk a fájlválasztó felugró ablakokat.
+Mint azt már \myaref{file_chooser_dialog} részben említettük, bár csak a \texttt{Drop} tulajdonságot
+kellene implementálnunk a \texttt{FileChooserDialog}-hoz, e helyett kihasználhatjuk ezt a lehetőséget,
+és definiálhatunk két különböző felugró ablakot --
+egyet a nyitásra, és egyet a mentésre.
+
+Így létrehozunk egy \texttt{ui/dialog.rs} fájlt:
+
+\lstinputlisting[firstline=33, lastline=62, language=Rust]{./kodreszletek/02_save.rs}
+
+A tömörség kedvéért a \texttt{SaveDialog} metódusa nincsenek itt feltüntetve.
+
+Mivel mindkettő felugró ablak struktúra csak egy \texttt{FileChooserDialog}-ot csomagol be,
+ezért itt a nevesített adattagos definíció helyett rendezett listákat (tuple) használunk
+a struktúrák definíciójára.
+Az ilyen definíció esetén az adattagok névtelenek, és elérésük a definíció sorrendje alapján történik,
+nullától kezdve.
+Ezt láthatjuk is a \texttt{run()} metódusban, ahol a becsomagolt \texttt{FileChooserDialog}-ot futtatjuk,
+illetve annak a felhasználó által kiválasztott fájlját kérjük le a \texttt{self.0} megnevezéssel.
+
+Mint azt már említettük, a \texttt{FileChooserDialog} háttérben maradása egy olyan tulajdonság,
+ami nekünk nem szükséges, ezért szeretnénk implementálni a \texttt{Drop} tulajdonságot hozzá.
+Ez könnyen megtehető, most, hogy már van két becsomagoló struktúránk is.
+
+\lstinputlisting[firstline=64, lastline=74, language=Rust]{./kodreszletek/02_save.rs}
+
+A tulajdonságok implementálása hasonló más nyelvek interfész-implementálásához, szintaktikától eltérve.
+A \texttt{Drop} implementálásával kötelezőek vagyunk a tulajdonság által megadott minden metódust implementálni.
+Ebben az esetben a \texttt{Drop} csak egyetlen egy metódust definiál, így nincs sok tennivalónk.
+
+Az, hogy miért szükséges a \texttt{Drop} tulajdonságot implementálni, a Rust kölcsönzés-ellenőrző
+rendszerének működésén alapszik.
+Más nyelvekben vagy a szemétgyűjtő rendszer pusztítaná el a fájlválasztó felugró ablak forrásait
+(mint a Java vagy a C\#), vagy pedig a programozó maga (\texttt{delete} a C++-ban).
+A Rust-ban akkor szabadulnak fel erőforrások, ha a birtokosa a hatáskörén kívülre esik.
+A \texttt{Drop} tulajdonság \texttt{drop()} metódusa pontosan ekkor lép életbe,
+ezért ez a tökéletes alkalom arra, hogy a Rust kölcsönzés-ellenőrző rendszerén kívül eső
+erőforrásokat felszabadítsuk -- mint például a GTK-s erőforrásokat a mi esetünkben.
+
 % TODO:
-% - Main (externeket kiemelni, hogy nincsenek)
-% - App
-% - Header
-% - SourceView
-% - ActiveMetadata
-% - események csatlakoztatása App-ban
-% - FileChooserDialog
 % - Megnyitás, mentés
+% - ActiveMetadata
+% - FileChooserDialog
+% - események csatlakoztatása App-ban
+% - Main
 
 % TODO: Részletesen be kell mutatni a tervezést és az implementációt!
 

@@ -142,3 +142,7 @@ impl Source {
             InputHints::WORD_COMPLETION);
     }
 }
+
+// Content hozzáadása az apphoz
+
+        window.add(&content.container);
