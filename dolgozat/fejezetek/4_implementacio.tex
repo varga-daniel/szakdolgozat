@@ -157,6 +157,8 @@ Ezután az \texttt{App}-ban hozzáadjuk a \texttt{Content} struktúrát az ablak
 
 \SubSection{Mentés metódus és a fájlválasztó felugró ablak}
 
+\subsubsection{\texttt{ActiveMetadata}}
+
 Ahhoz, hogy a fájlmentést létrehozzuk, szükségünk lesz először egy rendszerre, ami megállapítja,
 hogy az éppen szerkesztett fájl, és az, ami a háttértáron szerepel, ugyanaz-e.
 Erre \myaref{active_metadata} részben említett \texttt{ActiveMetadata} struktúrát készítjük el,
@@ -190,6 +192,8 @@ egy \texttt{map()} meghívás segítségével, ami kicsomagolás nélkül meghí
 metódust a belső értékre.
 Ha pedig a belső érték \texttt{None} (a Rust-ban a legközelebbi érték a \texttt{null}-hoz),
 akkor semmi nem történik, és a \texttt{None} érték hiba nélkül továbbmegy.
+
+\subsubsection{A felugró ablakok}
 
 Ahhoz, hogy menteni tudjunk, továbbá el kell készítenünk a fájlválasztó felugró ablakokat.
 Mint azt már \myaref{file_chooser_dialog} részben említettük, bár csak a \texttt{Drop} tulajdonságot
@@ -229,6 +233,121 @@ A Rust-ban akkor szabadulnak fel erőforrások, ha a birtokosa a hatáskörén k
 A \texttt{Drop} tulajdonság \texttt{drop()} metódusa pontosan ekkor lép életbe,
 ezért ez a tökéletes alkalom arra, hogy a Rust kölcsönzés-ellenőrző rendszerén kívül eső
 erőforrásokat felszabadítsuk -- mint például a GTK-s erőforrásokat a mi esetünkben.
+
+Utolsó lépésként a mentés funkció elkészítéséhez létrehozunk kettő segédmetódust,
+és ezeket az \texttt{ui/misc.rs} fájlba helyezzük.
+Ezek a 
+\begin{itemize}
+    \item \verb+set_title(headerbar: &HeaderBar, path: &Path)+,
+    ami beállítja a fejléc címét a megadott fájl elérési útvonalára,
+    amit mi az éppen szerkeszett fájl kiíratására fogunk használni, illetve a
+    \item \verb+get_buffer(buffer: &Buffer) -> Option<GString>+,
+    ami visszatér egy megadott puffer teljes tartalmával.
+\end{itemize}
+Ezek csak kényelmi metódusok, és implementációjuk triviális, ezért itt nem írunk róluk bővebben.
+
+\subsubsection{Mentés: adatírás}
+
+Az elkészülések után létrehozzunk az \texttt{ui/save.rs} fájlt,
+és definiáljuk egy mentés művelet visszatérési lehetőségeit:
+
+\lstinputlisting[firstline=78, lastline=82, language=Rust]{./kodreszletek/02_save.rs}
+
+A \texttt{SaveAction} enumeráció jelzi, hogy a mentés folyamata hogy sikerült:
+Lehet, hogy a mentés megbukott vagy sikerült, illetve lehet, hogy sikerült \textit{és}
+egy új fájlt hozott létre.
+
+A Rust-ban lehetséges az, hogy egy enumeráció variánsainak adattagokat adunk.
+Az adattagok lehetnek egy- vagy többelemű rendezett listában, illetve lehetnek
+megnevezett adattagok is -- hasonlóképpen egy struktúrához.
+Ehhez hasonló enumerációt már használtunk: Az \texttt{Option<T>} két variánssal térhet vissza,
+\texttt{None}, ami megfelel a más nyelvekbeli \texttt{null} értéknek, vagy
+\texttt{Some(T)}, ami azt jelzi, hogy tényleges \texttt{T} értéket kaptunk.
+
+Ezt az új enumerációnkat fel is használjuk a következő metódusunkban, amiben
+kiírjuk az adatokat a megadott fájlba:
+
+\lstinputlisting[firstline=84, lastline=85, language=Rust]{./kodreszletek/02_save.rs}
+
+Ennél a metódusnál az útvonalat egy \texttt{Option}-ba csomagoljuk be, így lehetővé téve
+azt, hogy ha útvonal nélkül hívjuk meg a metódust, akkor az kérdezzen rá, hogy hová
+szeretnénk menteni a fájlt.
+
+Továbbá itt megjelenik az \texttt{Option} "testvére," a \texttt{Result}.
+Még az előbbi a \texttt{null} értékeket váltja le, az utóbbi a különféle kivételkezelési
+módszerek helyett jön be.
+A \texttt{Result<T, E>} visszatérhet egy \texttt{Ok(T)} értékkel, ami jelzi,
+hogy a műveleteink hibák, illetve kivételek nélkül lefutottak, és \texttt{Some(T)}-be 
+becsomagolva visszaadja az elvárt visszatérési értéket,
+illetve visszatérhet egy \texttt{Err(E)}-vel, ami esetén becsomagolva kapunk vissza
+egy hibastruktúrát, amit aztán később kezelhetünk.
+
+A Rust-ban sok kényelmi funkció létezik, és itt is felhasználunk egyet.
+A fenti magyarázat az \texttt{std::Result} struktúrára vonatkozik, viszont mi az
+\texttt{std::io::Result} struktúrát használjuk.
+A különbség nem drasztikus, az \texttt{std::io::Result<T>} megfelel az \texttt{std::Result<T, std::io::Error>}
+struktúrának, így minden bemeneti-kimeneti hibát magában foglalva.
+
+A metódus legelső lépéseként megnézzük, hogy kaptunk-e egy útvonalat, és ha igen,
+akkor a megadott útvonalba kiíratjuk a teljes forráskód-szerkesztő puffert,
+és visszatérünk egy sikeres mentés enumeráció-variánssal.
+
+\lstinputlisting[firstline=87, lastline=95, language=Rust]{./kodreszletek/02_save.rs}
+
+Itt egyszerre több új Rust-egyedi tulajdonság lép előtérbe.
+Az \texttt{if let} szintaxis lecseréli a \texttt{match} szintaxis használatát enumerációk esetén,
+ugyanis a Rust-ban minden \texttt{match} ágat le kell kezelni, még azokat is, 
+amelyekkel nem szeretnénk semmit sem tenni.
+Az \texttt{if let} szintaxis ezen túl ki is csomagolja a megadott enumeráció-variánst, 
+ha az tartalmaz egy rendezett listát vagy nevesített adattagokat,
+hiszen a fordító biztosan tudja, hogy a programozó mivel dolgozik az \texttt{if let} blokkon belül. 
+
+Továbbá a külső \texttt{path} változót \textit{árnyékoljuk}.
+Az árnyékolás olyan esetekben előnyös, ahol egy megadott változón műveleteket hajtunk végre,
+de annak értékét nem változtatjuk.
+Ilyenkor felesleges más változónevet bevezetni, illetve néha negatív hatása is lehet,
+ha az új változónév nem írja le tisztán a változó mivoltját a névkonfliktus miatt.
+
+Tehát, a fenti \texttt{if let} szintaxis azt mondja, hogy ha a metódushívás során
+megadtunk egy \texttt{path}-ot, akkor azt kicsomagolva dolgozunk tovább,
+ellenkező esetben a metódus későbbi részeivel folytatjuk a program futását.
+
+A könnyebb érthetőség kedvéért tekintsük meg az alábbi három, ekvivalens szintaxist!
+
+\lstinputlisting[firstline=153, lastline=167, language=Rust]{./kodreszletek/02_save.rs}
+
+A legbőbeszédűbb megoldás a már említett \texttt{match} szintaxis.
+Ennek több fájdalompontja is van, mint például az összes ág lekezelésének kötelezettsége,
+még akkor is, ha ott nem kívánunk semmit tenni, illetve az, 
+hogy az ágakban még ki is kell csomagolnunk a \texttt{Some}-ban lévő értéket --
+a tényleges érték eléréséhez három behúzás szükséges, 
+és ugyanúgy három különböző változónév ugyanazon érték leírásához!
+
+A második megoldásban az \texttt{if let} szintaxissal megspóroljuk a \texttt{match}-csel
+járó sablonkód nagy részét -- itt már az \texttt{if let} hatáskörén belül a \texttt{lezetik} a kicsomagolt változó.
+Viszont az a probléma, hogy két külön néven utalunk ugyanarra az értékre még mindig fennáll.
+
+Ezért a harmadik megoldásban beárnyékoljuk a \texttt{path} változót.
+Az \texttt{if let} hatáskörén belül így a kicsomagolt értéket jelenti, 
+azon kívül pedig a becsomagolt értéket.
+
+Ha viszont a metódus nem kap egyáltalán \texttt{path} értéket, 
+akkor a második felében felnyitunk a felhasználónak egy fájlválasztó ablakot,
+és megkérjük, hogy mentse el a fájlt: 
+
+\lstinputlisting[firstline=97, lastline=108, language=Rust]{./kodreszletek/02_save.rs}
+
+A futása ennek a résznek hasonló, annyi különbséggel, hogy mint a mentési ablak futásától
+kapott helyre írjuk a fájlt, és létrehozunk egy új \texttt{ActiveMetadata}-t
+a fájl elérési helyével és tartalmával.
+
+Viszont itt azt is ellenőrizzük, hogy mi van akkor, hogy ha a mentési ablak \texttt{None}-nal
+tér vissza, azaz nem lett útvonal választva (mert például a felhasználó bezárta az ablakot).
+Ebben az esetben a \texttt{Canceled} variánssal térünk vissza.
+
+\subsubsection{Mentés: a mentés metódus}
+
+
 
 % TODO:
 % - Megnyitás, mentés
