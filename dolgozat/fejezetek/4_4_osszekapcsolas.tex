@@ -1,2 +1,101 @@
 \SubSection{A minimális program összecsatlakoztatása}
 
+A minimális IDE elkészítésének befejezéseként utoljára összekapcsoljuk az eddig létrehozott
+metódusokat az \texttt{App} működésével.
+A következőekben létrehozunk egy \textit{mentés esemény} metódust, ami elkapja a \textit{Mentés} gomb
+lenyomásakor történő jelzést, és azt az előbbi mentés metódusunkhoz köti,
+egy \textit{tartalom változott} metódust, ami megváltoztatja a \textit{Mentés} gomb szenzitivitását,
+azaz, hogy a felhasználó lenyomhatja-e a gombot,
+egy \textit{gomblenyomás} metódust, ami bizonyos gombok és gomb-kombinációk lenyomásakor
+különféle eseményeket indít el, illetve
+egy \textit{fájlmegnyitás} metódust, amivel egy felugró ablakban kiválaszthatjuk a megnyitandó fájlt.
+
+Ezek után az \texttt{App}-ot becsomagoljuk egy \texttt{ConnectedApp} struktúrába,
+amit akkor hozunk létre, hogy ha a fent felsorolt metódusokat az \texttt{App}-hoz csatlakoztattuk,
+és csak a \texttt{ConnectedApp}-ot engedjük megjeleníteni.
+Végül létrehozzuk a \texttt{main()} metódust, és a minimális program elkészült.
+
+Kezdjük a mentés eseményével, a \texttt{save\_event()} metódussal.
+Ezt az \texttt{App} metódusaként definiáljuk, mivel az fogja felhasználni.
+
+\lstinputlisting[firstline=3, lastline=8, language=Rust]{./kodreszletek/04_connecting.rs}
+
+Emlékezzünk, hogy ha egy struktúrához definiálunk egy metódust, akkor a metódus első paramétere
+általában \texttt{\&self}, egy utalás a struktúra példányára magára,
+viszont ez nem akadályoz meg minket abban, hogy nem referenciaként utaljunk a példányra.
+
+Kitűnik, hogy a mentés metódus által szükségelt elemeket \texttt{clone()}-oztuk.
+A klónozás a \texttt{Clone} tulajdonság metódusa, és általános implementációja az,
+hogy a klónozott értékkel megegyező, de különb értéket hoz létre.
+Logikailag, itt utalnunk kellene az elemekre, nem klónozni őket, viszont akkor nem tudjuk
+biztosítani a Rust-nak, hogy a referenciák elég hosszan él 
+(a \texttt{connect\_clicked()} metódus statikus élettartamú értékeket vár).
+Átadni sem tudjuk a metódusnak az elemeket, mert akkor a példányt magát próbálnánk átadni,
+ami a példány elpusztulását eredményezné, illetve tilos is, ha első paraméterként csak kölcsönöztük azt.
+
+Viszont, mint azt már a szakdolgozat elején említettük, minden GTK-s elem a \texttt{gtk-rs}
+könyvtárban valójában egy referencia, és a Rust-os felület alatt egy referencia-számolt
+C-ben íródott rendszer fut.
+Így nem a puffert, vagy a fejlécet, vagy a \textit{Mentés} gombot klónozzuk, hanem csak referenciákat rá,
+és, bár a Rust kölcsönzés-kezelési szabályait kikerülve, a metódus úgy működik, ahogy azt elvárnánk.
+
+Végül furcsának tűnhet az, hogy csak is a \textit{Mentés} gombot adjuk át a mentés metódusnak,
+és a \textit{Mentés Másként} gombot soha.
+Ez azért van, mivel csak a \textit{Mentés} gombot szeretnénk kattinthatatlanná tenni,
+ha a háttértáron lévő fájl, és a betöltött tartalom megegyezik, mivel akkor felesleges a mentés.
+Menteni más néven a felhasználónak mindig van lehetősége, és egy ilyen mentés után
+a háttértáron lévő fájl, és a betöltött tartalom bizonyosan megegyezik, így ekkor is 
+ki kell kapcsolni a \textit{Mentés} gomb szenzitivitását.
+
+Következőnek egy metódussal, \texttt{editor\_changed()}, ugyanezt az esetet vizsgáljuk, ugyanúgy állítva a \textit{Mentés} gomb szenzitivitását,
+viszont akkor, hogy ha a kódszerkesztő tartalma megváltozik. 
+
+\lstinputlisting[firstline=12, lastline=23, language=Rust]{./kodreszletek/04_connecting.rs}
+
+Itt a puffer változásakor elindított jelzéséhez hozzákapcsolunk egy lexikai zárványt,
+ami elkéri a jelenlegi fájlt olvasásra, majd összehasonlítja annak tartalmát, a háttértáron lévő fájl hash-jét,
+a saját maga teljes tartalmának Keccak hash-jével, és az alapján módosítja a \textit{Mentés} gombot.
+
+A zárványba bemozgatunk egy referenciát saját magára, a pufferre, \texttt{editor} néven,
+mivel a \texttt{connect\_changed()} olyan metódust kér paraméternek, aminek első paramétere
+referencia a meghívóra saját magára.
+
+További két, említésre nem méltő metódust is létrehozunk, a \texttt{key\_events()} és az \texttt{open\_file()} metódusokat.
+Bár szükségesek a program futásához, tartalmilag megegyeznek sokban az eddigiekkel:
+a gomb-ellenőrzés egy kibővített \texttt{match}, még a fájlmegnyitás sokban hasonlít a mentésre.
+A fájlmegnyitás során a betöltött fájl tartalmát kiolvassunk egy \texttt{content} mutálható \texttt{String}-be,
+majd kódszerkesztő pufferének átadjuk tartalomként.
+
+Ahhoz, hogy biztosra menjünk, hogy ezek a metódusok mindenképpen hozzá lesznek csatlakoztatva
+az \texttt{App} példányunkhoz valahogy, azt becsomagoljuk a már említett \texttt{ConnectedApp}
+struktúrába adattagként egy egyelemű rendezett listába, és csak a végső \texttt{ConnectedApp}-ot
+engedjük felhasználni.
+
+\lstinputlisting[firstline=46, lastline=53, language=Rust]{./kodreszletek/04_connecting.rs}
+
+Ezt a következőképpen érjük el. Először létrehozzuk a \texttt{ConnectedApp} struktúrát,
+és egyetlenegy metódusában megjelenítjük a becsomagolt \texttt{App} ablakát, majd elindítjuk a GTK szálat.
+A \texttt{ConnectedApp}-ot viszont nem egy asszociált metódussal fogjuk létrehozni,
+hanem az \texttt{App} egy metódusának eredményeként.
+
+\lstinputlisting[firstline=57, lastline=74, language=Rust]{./kodreszletek/04_connecting.rs}
+
+Itt fontos kiemelni, hogy a metódus első paraméterének nem \texttt{\&self}-et adtunk meg,
+hanem \texttt{self}-et, tehát a példányt magát, és nem a referenciát rá.
+Ez azt jelenti, hogy hacsak nem adjuk tovább a példány birtoklását, akkor a példány felszabadul
+a metódus lefutása után.
+Láthatjuk viszont, hogy a példányt tovább is adjuk, egy újonnan létrejött \texttt{ConnectedApp}
+szerzi meg a birtokjogot felette.
+
+Továbbá ismét kitűnhet, hogy a \texttt{clone()} metódust hívjuk többször is,
+de most viszont nem GTK-s struktúrán.
+Nem szabad feledni viszont, hogy az \texttt{Arc} egy referencia-számlált, szálbiztonságos struktúra, 
+amire a \texttt{clone()} meghívása során az új \texttt{Arc} szintúgy csak egy referenciát tárol
+a célértékre, az érték maga nem másolódik.
+Mivel minden klónozott \texttt{Arc} egyenértékű az eredetivel, az utolsó esetben, mikor az \texttt{Arc}-ot
+kell felhasználnunk, át is adhatjuk a metódusnak az eredetit magát.
+
+Végő lépésként a minimális program elkészítéséhez módosítjuk a \texttt{main.rs} fájlt,
+hogy meghívja a végleges \texttt{ConnectedApp}-ot.
+
+\lstinputlisting[firstline=78, lastline=86, language=Rust]{./kodreszletek/04_connecting.rs}

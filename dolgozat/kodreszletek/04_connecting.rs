@@ -23,6 +23,22 @@ self.content.source.buff.connect_changed(move |editor| {
 });
 
 // key_events
+
+self.window.connect_key_press_event(move |window, eventkey| {
+    match eventkey.get_keyval() {
+        key::F11 => {
+            // ...
+        }
+        key if key == 's' as u32 && eventkey.get_state()
+            .contains(ModifierType::CONTROL_MASK) =>
+        {
+            // ...
+        }
+        _ => (),
+    }
+    Inhibit(false)
+});
+
 // open_file
 
 // ConnectedApp
