@@ -1,5 +1,52 @@
 \Chapter{Összegzés}
 
 % TODO: Röviden értékelni kellene, hogy mi és hogy készült el a dolgozat megírása során.
-
 % Ez sem kell, hogy túl hosszú legyen, és elég csak a végén megírni.
+
+A dolgozat egy fejlesztői környezet fejlesztésének menetét mutatta be a Rust programozási nyelvben és nyelvhez.
+
+A dolgozat megírása előtt hallottam már a Rust nyelvről, és érdekelt is voltam benne, 
+viszont nem dolgoztam még vele.
+Hasonlót mondhatok a GTK widgetkönyvtárról is -- bár használati szinten ismertem, 
+mivel a Linux asztal-környezetem a GTK-n alapszik, használni még nem használtam.
+Ugyan ez nem az első alkalom, hogy felhasználói felületet kellett készítenem egy programhoz,
+ebből a szempontból jobban ismerem a Qt könyvtárát.
+
+A program írása során sok problémába ütköztem a Rust sajátosságai miatt.
+Ha le kellene írnom a tapasztalataimat a Rust-tal, akkor azt mondanám, hogy használatakor
+a problémák az ismerkedés elején jelennek meg, majd ahogy a programozó egyre tapasztaltabb
+a használatában, úgy a Rust-ban való programozás egyre egyszerűbb lesz --
+ellentétben például a C++-szal, amit elkezdeni egyszerű, de a nyelv használata jelentősen megnehezedik,
+ahogy a programozó belemélyed a mutatók, referenciák, és sablonok használatába.
+
+Ez egyszerre egy pozitívum és egy negatívum.
+Az első projekt elkészítése során sokan megrémülnek a nyelv látszólagos nehézségétől,
+de ellentétben egy emberrel, a fordító "figyelme" nem lankad még a tizedik projektnél sem,
+amikor már a tapasztalt felhasználó örömmel fogadja a fordító javaslatait.
+
+Bár a Rust használata egyre könnyebbbé válik, ahogy az idő telik, a GTK Rust binding használata pont az ellentéte ennek.
+A dolgozat során sokszor említettem, hogy a GTK-s objektumok nem tisztelik a Rust szabályait,
+és emiatt a GTK eredetű struktúrák helyes használata sokszor rejtélyes vagy logikának ellentmondó
+(például a klónozható struktúrák).
+
+Ezt a problémát nem segíti a \texttt{gtk-rs} láda dokumentációja.
+A használati útmutatót régen frissítették, és a legtöbb bemutatott példa nem fut a jelenlegi verziókban,
+az API dokumentáció pedig hiányos magyarázatokban, és néhol a magyarázat a C nyelvre utal, és annak használatát mutatja be.
+Sőt, a GTK öröklődési szabályainak megtartása érdekében a fontosabb metódushívásokat, amiket a felhasználó kereshet,
+nem a megadott struktúrában kell keresni, hanem valamelyik tulajdonságban, amit implementál.
+Gyakori az, hogy egy \texttt{Valami} struktúra 
+leggyakrabban használt metódusát a \texttt{ValamiExt} tulajdonságban kell keresni.
+
+Ez természetesen nem rossz, vagy elkerülendő programozási módszertan.
+A \texttt{File\-ChooserDialog} logikusan implementálja a \texttt{DialogExt}, \texttt{FileChooserExt},
+\texttt{WidgetExt} és más tulajdonságokat, és ezeken osztozik más struktúrákkal.
+Ha a felhasználó tudja, hogy mit keres, akkor ez a megoldás tökéletes.
+Együtt az előbb említett hiányos dokumentációval, és a félrevezető példákkal viszont zavaró és átláthatatlan.
+
+Sajnálatos módon továbbá az RLS-t nem volt időm bekötni a programba.
+Alábecsültem a programhoz szükséges tapasztalatot, illetve az időt, ami alatt ezt a tapasztalatot megszerezhetem.
+Egy IDE sok mozgó részből áll, és ezt kezdetben nem láttam át.
+
+Ennek ellenére sokat tanultam a fejlesztői környezetek felépítéséről, hogy hogyan működnek,
+és ha még egyszer neki kellene vágnom ennek a projektnek, akkor úgy gondolom,
+hogy sikerülne felépíteni egy igazi Rust IDE-t.
