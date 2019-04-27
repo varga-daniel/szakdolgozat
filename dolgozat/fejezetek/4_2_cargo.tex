@@ -49,7 +49,7 @@ hogy a fejléc tartalmát módosítsa, majd a későbbiekben ezt hívjuk meg fá
 
 Ennek a metódusnak megadunk egy \texttt{same\_sum} paramétert, ami igaz,
 hogy ha a háttértáron lévő fájl tartalma megegyezik a kódszerkesztő pufferével.
-A fejléc tartalmának elkésszítése ilyen módon megengedi nekünk, hogy a kódszerkesztő \texttt{changed}
+A fejléc tartalmának elkészítése ilyen módon megengedi nekünk, hogy a kódszerkesztő \texttt{changed}
 jelzését kihasználva értesítsük a felhasználót arról, hogy mentetlen változásai vannak
 (emlékezzünk, ezt a jelzést már használtuk a hash szummák összehasonlítására).
 
@@ -68,7 +68,7 @@ nem hajtunk rajta végre, így elég csak két metódust létrehoznunk hozzá:
 \texttt{get\_path()}, ami visszatér a teljes, abszolút elérési útvonallal,
 és \texttt{get\_name()}, ami a könyvtár nevével.
 
-A megadott láda kiválasztásához továbbá létrehozunk jét újabb felugró ablakot,
+A megadott láda kiválasztásához továbbá létrehozunk két újabb felugró ablakot,
 szintúgy a létezőek mintájára.
 
 \lstinputlisting[firstline=38, lastline=39, language=Rust]{./kodreszletek/11_cargo.rs}
@@ -98,19 +98,19 @@ ami felhívja a felhasználó figyelmét erre, ha szükséges.
 
 Mint az \texttt{ActiveMetadata} esetében, a projektkezelő metódusok nagyban hasonlítanak a fájlkezelőkre,
 kivéve, hogy nincs tartalom, amit kezelni kellene.
-Egy nagy különsbég viszont az, hogy egy projekt akkor tekinthető Cargo ládának, hogy ha létezik a
-könyvtárában egy \texttt{Cargo.toml} fájl, így projektmegnyitáskor ellenőrizzük azt.
+Egy nagy különbség viszont az, hogy egy projekt akkor tekinthető Cargo ládának, hogy ha létezik a
+könyvtárában egy \texttt{Cargo.toml} fájl, így projekt megnyitáskor ellenőrizzük azt.
 
 Végül az \texttt{App}-ban kihozzuk a jelenlegi fájlt (és projektet) adattagként, 
-ezáltal leegyszerűsítve a metódushívásokat, illetve egy \texttt{Arc}-ba csomagoljuk
+ezáltal leegyszerűsítve a metódus hívásokat, illetve egy \texttt{Arc}-ba csomagoljuk
 a \texttt{Header}-t, ezáltal elérést biztosítva az azt érintő jelzéseknek --
 egy jelzés meghívhat több metódust is aktiválásakor.
 
 \lstinputlisting[firstline=109, lastline=116, language=Rust]{./kodreszletek/11_cargo.rs}
 
 Az új műveleteket aktiváltatjuk a különféle menü elemek \texttt{connect\_activated()} jelzéseivel,
-illetve létrehozunk új billentyűkombinációkat a leggyakoribb műveletek meghívására is.
-Jelenleg a programban a következő billentyűkombinációk léteznek:
+illetve létrehozunk új billentyű-kombinációkat a leggyakoribb műveletek meghívására is.
+Jelenleg a programban a következő billentyű-kombinációk léteznek:
 
 \begin{itemize}
     \item \texttt{F11}: Teljes képernyő
@@ -150,5 +150,5 @@ metódus hívja meg.
 Mivel a Cargo műveletek hasonlítanak egymásra futásban és a kimenetük feldolgozásában,
 így a jelenleg futtatott Cargo parancsot egy enumeráció dönti el.
 
-A Cargo parancsmeghívások és a menü elemek kiválasztási jelzéseit összekötve a
+A Cargo parancs-meghívások és a menü elemek kiválasztási jelzéseit összekötve a
 program meg tud nyitni ládákat, és azokon alapvető Cargo műveleteket tud futtatni.

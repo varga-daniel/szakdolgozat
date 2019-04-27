@@ -1,13 +1,13 @@
 \Chapter{A Rust programozási nyelv}
 \label{sec:rust}
 
-A \textit{Rust} egy multi-paradigmájú rendszer-programozási nyelv,\cite{oldpage:main},
+A \textit{Rust} egy multi-paradigmájú rendszerprogramozási nyelv,\cite{oldpage:main},
 ami a biztonságos kódra helyez hangsúlyt, főként a programok biztonságos párhuzamosítására.\cite{mostlysafety, oldpage:faq:project}
 Bár a Rust szintaktikailag hasonlít a C++-ra,\cite{rustvscpp} úgy van megtervezve, hogy jobb memória-biztonságot nyújtson a C++-hoz legalább hasonló vagy jobb teljesítmények mellett.
 
 A nyelvet eredetileg \textit{Graydon Hoare} tervezte a \textit{Mozilla Research-nél}, Dave Herman, Brendan Eich, és mások támogatásával.\cite{rust:designedby}
 A tervezők tovább fejlesztették a nyelvet a Servo internetböngésző-motor\cite{servo:ars, servo:mozilla} és a Rust fordító fejlesztése alatt.
-A fordító maga nyílt forráskódú, duplán licenszelt az MIT és Apache licenszek alatt.
+A fordító maga nyílt forráskódú, duplán licencelt az MIT és Apache licencek alatt.
 
 A következőekben leírjuk a Rust nyelv történetét, összehasonlítjuk a C++ nyelvvel,
 majd bemutatjuk a Rust olyan egyedi tulajdonságait, amik az összehasonlításban nem jöttek elő.
@@ -19,17 +19,17 @@ Bár a nyelv nevének eredetére nem emlékszik, azt állítja, hogy a projekt a
 
 Mozilla 2009-ben kezdte el támogatni a projektet, mikor Graydon Hoare bemutatta a Rust prototípusát az akkori menedzserének.\cite{interview:graydon} 
 Mozilla érdeklődését akkor keltette fel a projekt, amikor a nyelv már eléggé érett volt ahhoz, hogy bemutassa a fő koncepcióit, és teszteket lehessen rajta futtatni,\cite{oldpage:faq:project} 
-majd felállított egy csapatot, aminek feladata az volt, hogy a nyelven tovább dolgozzon azzal a céllal, hogy beépíthessék azt az akkor fejlesztés allatt álló Servo projektjükbe.\cite{oldpage:faq:project, interview:graydon}
+majd felállított egy csapatot, aminek feladata az volt, hogy a nyelven tovább dolgozzon azzal a céllal, hogy beépíthessék azt az akkor fejlesztés alatt álló Servo projektjükbe.\cite{oldpage:faq:project, interview:graydon}
 A projektet 2010-ben kiáltotta ki Mozilla.\cite{talk:servo}
 Még ugyanabban az évben a csapat fókuszt váltott, és az eredeti OCaml-ben írott fordító helyett elkezdtek dolgozni egy önmagát lefordítani képes fordítón, Rustban.\cite{rust:compilerwork}
 Ez a fordító a \texttt{rustc} nevet kapta, és 2011-ben le is fordította magát sikeresen.\cite{rust:successful_compile} A \texttt{rustc} LLVM-et használ backend-ként.
 
-A Rust fordító első számotott pre-alfa kiadása 2012. januárjában jött ki.\cite{rust:first_release}
+A Rust fordító első számozott pre-alfa kiadása 2012. januárjában jött ki.\cite{rust:first_release}
 A fejlesztők 2015. május 15-én adták ki a Rust 1.0-át, a nyelv és fordító első stabilis kiadását.\cite{rust:1_0:blog, rust:version_history}
 Az 1.0-ás kiadás után további kiadások hat hetente történnek, és emellett fut két további fejlesztési ág is, az alfa és a béta ágak, szintúgy hat hetes időtartamokkal.\cite{rust:release_cycle}
 Ez a rendszer megakadályozza, hogy nem stabilis funkciók kerüljenek a nyelve.\cite{rust:stability}
 
-A Rust objektum-rendszere sokat változott az első verziókban. A 0.2-es verzió osztályokatt hozott a nyelvbe, amit aztán a 0.3-as verzió tovább fejlesztett a destruktorok és az interfészek által nyújtott polimorfizmusi lehetőségekkel.
+A Rust objektum-rendszere sokat változott az első verziókban. A 0.2-es verzió osztályokat hozott a nyelvbe, amit aztán a 0.3-as verzió tovább fejlesztett a destruktorok és az interfészek által nyújtott polimorfizmusi lehetőségekkel.
 A 0.4-es verzió végül lecserélte az osztályokat struktúrákra, behozott egy tulajdonság (trait) rendszert a öröklődés lehetőségének biztosítására, 
 beleolvasztotta az interfészeket a tulajdonságokba (és eltörölte azokat, mint különálló funkció).\cite{rust:version_history}
 
@@ -46,10 +46,10 @@ A Stack Overflow weboldal éves kérdőíve szerint a Rust 2015-ben a harmadik l
 A következőekben elemzünk néhány gyakori problémát illetve kihívást, ami feljöhet egy program fejlesztése során,
 és megvizsgáljuk, hogy hogyan kezeli a megadott feladatot a Rust és a C++, és hogy miben hasonlóak és különböznek.
 
-\SubSection{Költségnélküli absztrakció}
+\SubSection{Költség nélküli absztrakció}
 
-Ha a kódban az absztrakció nem költségnélküli, akkor a programozó hajlamosabb a kód-duplikációra, hogy elkerülje a virtuális metódushívások magas árát.
-Ebben az esetben mindkettő nyelv lehetőséget ad költségnélküli absztrakcióra, ahol lehetséges.\cite{compare:cpp:zerocost, compare:rust:zerocost}
+Ha a kódban az absztrakció nem költség nélküli, akkor a programozó hajlamosabb a kód-duplikációra, hogy elkerülje a virtuális metódushívások magas árát.
+Ebben az esetben mindkettő nyelv lehetőséget ad költség nélküli absztrakcióra, ahol lehetséges.\cite{compare:cpp:zerocost, compare:rust:zerocost}
 
 \SubSection{Mozgatás szemantikák}
 \label{subsec:ownership_mentioned}
@@ -69,7 +69,7 @@ Mindkét nyelv inkább az okos mutatókat és referenciákat preferálja, és a 
 a Rust könyv meg is jegyzi, hogy az okos mutatók ötlete a C++-ból ered.\cite{compare:rust:smart_pointers}
 
 Viszont, az, hogy hogy kezelik a nyers mutatókat, eltér. C++-ban nincs különösebb megoldás a nyers mutatók észrevételére,
-kivéve a manuális kód-ellenőrzést.
+kivéve a manuális kódellenőrzést.
 A Rust ezzel ellentétben csak az \texttt{unsafe} kódblokkokban enged nyers mutatókat használni. 
 Az ilyen blokkok mindig meg vannak jelölve az \texttt{unsafe} megnevezéssel, így egy egyszerű keresés a fájlokban rámutat, hol lehetnek nyers mutatók.\cite{compare:rust:raw_pointers}
 

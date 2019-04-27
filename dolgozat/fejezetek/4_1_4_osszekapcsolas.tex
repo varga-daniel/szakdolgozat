@@ -60,7 +60,7 @@ A zárványba bemozgatunk egy referenciát saját magára, a pufferre, \texttt{e
 mivel a \texttt{connect\_changed()} olyan metódust kér paraméternek, aminek első paramétere
 referencia a meghívóra saját magára.
 
-További két, említésre nem méltő metódust is létrehozunk, a \texttt{key\_events()} és az \texttt{open\_file()} metódusokat.
+További két, említésre nem méltó metódust is létrehozunk, a \texttt{key\_events()} és az \texttt{open\_file()} metódusokat.
 Bár szükségesek a program futásához, tartalmilag megegyeznek sokban az eddigiekkel:
 a gomb-ellenőrzés egy kibővített \texttt{match}, még a fájlmegnyitás sokban hasonlít a mentésre.
 A fájlmegnyitás során a betöltött fájl tartalmát kiolvassunk egy \texttt{content} mutálható \texttt{String}-be,
@@ -68,7 +68,7 @@ majd kódszerkesztő pufferének átadjuk tartalomként.
 
 Ahhoz, hogy biztosra menjünk, hogy ezek a metódusok mindenképpen hozzá lesznek csatlakoztatva
 az \texttt{App} példányunkhoz valahogy, azt becsomagoljuk a már említett \texttt{ConnectedApp}
-struktúrába adattagként egy egyelemű rendezett listába, és csak a végső \texttt{ConnectedApp}-ot
+struktúrába adattagként egy egy elemű rendezett listába, és csak a végső \texttt{ConnectedApp}-ot
 engedjük felhasználni.
 
 \lstinputlisting[firstline=46, lastline=53, language=Rust]{./kodreszletek/04_connecting.rs}
@@ -95,7 +95,7 @@ a célértékre, az érték maga nem másolódik.
 Mivel minden klónozott \texttt{Arc} egyenértékű az eredetivel, az utolsó esetben, mikor az \texttt{Arc}-ot
 kell felhasználnunk, át is adhatjuk a metódusnak az eredetit magát.
 
-Végő lépésként a minimális program elkészítéséhez módosítjuk a \texttt{main.rs} fájlt,
+Végső lépésként a minimális program elkészítéséhez módosítjuk a \texttt{main.rs} fájlt,
 hogy meghívja a végleges \texttt{ConnectedApp}-ot.
 
 \lstinputlisting[firstline=78, lastline=86, language=Rust]{./kodreszletek/04_connecting.rs}

@@ -44,7 +44,7 @@ A szükséges funkciók a következők:
 	Továbbá, az IDE-n belül fontos, hogy legyen a projekt fájlrendszerének egy fa-struktúrás reprezentációja, ami segítségével a felhasználó tudjon refaktorálást végezni a fájlokon, vagy a cargo követelményeit betartva hozhasson létre fájlokat 
 	(A Rust 2016-os verziója például megköveteli, hogy a modulmappák 'fő' forrásfájlja a \texttt{mod.rs} nevet kapja).
 	
-	\item Az IDE tudja a projektet lefordítani debuggoláshoz és kiadáshoz, tudja a projekt tesztjeit lefuttatni, és tudja a projekt problémáit leellenőrzni. 
+	\item Az IDE tudja a projektet lefordítani debuggoláshoz és kiadáshoz, tudja a projekt tesztjeit lefuttatni, és tudja a projekt problémáit leellenőrizni. 
 	Ezek viszonylag egyszerű cargo parancsmeghívások, a fontos rész az, hogy ezeket a felhasználó egy gombnyomással vagy billentyűkombinációval meg tudja hívni.
 	
 	\item Az IDE tudjon dokumentációt szolgáltatni a felhasználónak a kód megadott részeiről. 
@@ -61,7 +61,7 @@ A szükséges funkciók a következők:
 	\end{enumerate}
 	
 	\item Az IDE-nek szolgáltatnia kell alapvető verziókövetési támogatást. 
-	Mivel a git a legelterjettebb verziókövető alkalmazás, ezért az IDE-nek tudnia kell git által változtatásokat feltölteni, letölteni, commit-olni, ágakat létrehozni.
+	Mivel a git a legelterjedtebb verziókövető alkalmazás, ezért az IDE-nek tudnia kell git által változtatásokat feltölteni, letölteni, commit-olni, ágakat létrehozni.
 	
 	\item Végül, ha szükséges, az IDE legyen bővíthető. 
 	Hasonlóképpen a \emph{Visual Studio}-hoz, legyen lehetőség saját parancsok létrehozására, amikkel a felhasználó tetszőleges programokat hívhat meg. 
@@ -87,13 +87,13 @@ A \texttt{GTKSourceView}-ben lévő szöveg kirajzolásához szükséges lesz a 
 Egyelőre itt további követelmény vagy érdekesség nincs -- viszont, ha később azt szeretnénk, 
 hogy a dokumentációt ne külső webböngészőben jelenítsük meg, hanem a programon belül, akkor több haszna is lehet ennek a könyvtárnak.
 
-A billentyűkombinációkhoz szükséges lesz behívni a \texttt{GDK} könyvtárat, hogy az ablak által kapott
+A billentyű-kombinációkhoz szükséges lesz behívni a \texttt{GDK} könyvtárat, hogy az ablak által kapott
 billentyű-lenyomás jelzéseket elkaphassuk, feldolgozhassuk, és értelmezhessük.
 
 Végül, szükséges lesz egy könyvtár, aminek segítségével össze tudunk hasonlítani két szövegblokkot.
 Erre egy megoldás a SHA kriptográfiai függvény, aminek egy SHA-3 implementációját a \texttt{tiny-keccak} könyvtár szolgáltatja.
 
-Összességében, a következő Rust "ládákra" (Rust csomagokra) lesz szükségünk a minimális funckiókhoz:
+Összességében, a következő Rust "ládákra" (Rust csomagokra) lesz szükségünk a minimális funkciókhoz:
 
 \begin{itemize}
 	\item \texttt{gtk} (\texttt{v3\_22} funkcióval legalább)
@@ -115,7 +115,7 @@ a standard könyvtárban lévő struktúrákhoz és metódusokhoz.
 
 Az LSP alapú nyelvszerverek JSON-RPC\cite{json-rpc} távoli-eljáráshívás protokoll alapján kommunikálnak
 a kliens programokkal, ezért szükség lesz egy JSON szerializáló és deszerializáló könyvtárra is.
-Erre a legelterjettebb megoldás a \texttt{serde} könyvtár, vagyis a mi esetünkben a \texttt{serde-json} alkönyvtára.
+Erre a legelterjedtebb megoldás a \texttt{serde} könyvtár, vagyis a mi esetünkben a \texttt{serde-json} alkönyvtára.
 
 Ahhoz, hogy az RLS-t használni tudjuk egy Rust projekten, szükségünk lesz a Rust projektek készítésére is.
 Ehhez \myaref{cargo_mention} részben is említett Cargo csomagkezelőt fogjuk használni.
@@ -181,7 +181,7 @@ Az \texttt{Arc} működése tekinthető hasonlónak a mutatókhoz szemétgyűjt�
 
 Az \texttt{Arc} struktúrát még egy másik helyen használjuk, a teljes képernyős mód kezelésénél.
 A használati ok megegyezik az előzővel, annyi különbséggel, hogy itt most egy \texttt{AtomicBool} struktúrát csomagolunk be.
-Az \texttt{AtomicBool} egy szál-biztonságos \texttt{boolean} változó.
+Az \texttt{AtomicBool} egy szálbiztonságos \texttt{boolean} változó.
 
 Az alfejezet elején röviden említett grafikus felületi elemek esetén nincs sok tennivaló.
 Itt inkább, mint például a \texttt{Window} és a \texttt{Header} esetében, az elemek elhelyezkedése és viselkedése az,
@@ -224,8 +224,8 @@ A struktúrát főképp két helyen fogjuk használni, az \texttt{App} illetve a
 A Cargo parancsok meghívásának variációit tárolhatjuk az \texttt{App} alatt egy listában,
 mivel a parancsmeghívás-építő nem kötelezi a parancs azonnali meghívását az építés lefolyása után,
 és egy megépített parancs többször is meghívható.
-Továbbá, a Cargo parancshívások argumentumlistái nem változnak túlságosan nagy mértékben,
-hogy azt szükséges legyen minden esetben újraépíteni meghívás előtt memóriatakarékosság érdekében.
+Továbbá, a Cargo parancshívások argumentum listái nem változnak túlságosan nagy mértékben,
+hogy azt szükséges legyen minden esetben újraépíteni meghívás előtt memória-takarékosság érdekében.
 
 A következő alapvető Cargo parancsokat érdemes implementálni:
 
@@ -238,7 +238,7 @@ A következő alapvető Cargo parancsokat érdemes implementálni:
     \item \verb+cargo build+: hibakereső módban lefordítja a projektet.
     Ha szükséges, letölti és lefordítja a kellő követelményeket.
     \item \verb+cargo build --release+: kiadás módban fordítja a projektet.
-    \item \verb+cargo check+: leellenőrzi a projektet és a követleményeit, hogy vannak-e bennük hibák.
+    \item \verb+cargo check+: leellenőrzi a projektet és a követelményeit, hogy vannak-e bennük hibák.
     \item \verb+cargo test+: leellenőrzi a projektben megadott teszteket.
     \item \verb+cargo bench+: leméri a \verb+#[bench]+ jelzővel ellátott tesztek lefutási idejét.
     \item \verb+cargo doc+: lefordítja a projektben lévő (publikus) dokumentációt.

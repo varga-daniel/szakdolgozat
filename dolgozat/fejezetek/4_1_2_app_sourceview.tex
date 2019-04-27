@@ -43,14 +43,14 @@ beállítjuk az ablak nevét és méretét, majd visszatérünk az osztállyal.
 
 A \verb+connect_delete_event()+ kitűnik, bár igazából az is magától értetődő.
 A metódus egyetlen paraméternek egy másik metódust kér, ami egy \texttt{Inhibit} struktúrával tér vissza.
-Ennek a paramétermetódusnak magának is egy paramétere kell, hogy legyen, egy referencia az eseményre.
-Ezt a paramétermetódust helyben definiáljuk egy lexikai zárvány (closure) segítségével.
+Ennek a paraméter metódusnak magának is egy paramétere kell, hogy legyen, egy referencia az eseményre.
+Ezt a paraméter metódust helyben definiáljuk egy lexikai zárvány (closure) segítségével.
 A \verb+move |_, _|+ kijelenti, hogy egy zárványt írunk le, és két (névtelen) paramétert adunk neki --
 ne feledjük, hogy nem statikus metódusok esetén a tényleges első paraméter egy referencia a struktúrára magára!
 Ennek ellenére a zárvány paraméterei névtelenek maradtak azért, mert nem használtuk fel őket magában a zárványban.
 
 A zárvány tartalma ehhez képest egyszerű.
-Meghívjuk a GTK rendszer kilépő metódusát, majd visszatérünk egy hamis értékű \texttt{Inhibit} struktúrapéldánnyal --
+Meghívjuk a GTK rendszer kilépő metódusát, majd visszatérünk egy hamis értékű \texttt{Inhibit} struktúra példánnyal --
 Nem kell a jelzést tovább küldeni, a programot már bezárásra késztettük.
 
 \subsubsection{Az ablak fejléce}

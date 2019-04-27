@@ -25,7 +25,7 @@ ez azért van, mert hasonlóképpen a szövegkezeléshez, itt is érdemesebb nem
 visszatérni, ahol lehetséges.
 Az eredmény útvonal továbbá egy \texttt{Option}-ba van becsomagolva, mivel a metódus a programon
 kívüli állapotról tér vissza információval, és annak helyességét nem tudja biztosítani
-(például, a program indítása és a metódus meghívása között elveszettük az olvasási jogot a fájl
+(például, a program indítása és a metódus meghívása között elvesztettük az olvasási jogot a fájl
 könyvtárához, vagy valami kiszámíthatatlan hiba történt).
 Ezen kívül kötelesek vagyunk nem félrevezetni a \verb+get_dir()+ metódus felhasználóit,
 ezért nem csomagolhatjuk ki az útvonalat az \texttt{Option}-ből --
@@ -83,7 +83,7 @@ Ezek a
 \begin{itemize}
     \item \verb+set_title(headerbar: &HeaderBar, path: &Path)+,
     ami beállítja a fejléc címét a megadott fájl elérési útvonalára,
-    amit mi az éppen szerkeszett fájl kiíratására fogunk használni, illetve a
+    amit mi az éppen szerkesztett fájl kiíratására fogunk használni, illetve a
     \item \verb+get_buffer(buffer: &Buffer) -> Option<GString>+,
     ami visszatér egy megadott puffer teljes tartalmával.
 \end{itemize}
@@ -101,7 +101,7 @@ Lehet, hogy a mentés megbukott vagy sikerült, illetve lehet, hogy sikerült \t
 egy új fájlt hozott létre.
 
 A Rust-ban lehetséges az, hogy egy enumeráció variánsainak adattagokat adunk.
-Az adattagok lehetnek egy- vagy többelemű rendezett listában, illetve lehetnek
+Az adattagok lehetnek egy- vagy több elemű rendezett listában, illetve lehetnek
 megnevezett adattagok is -- hasonlóképpen egy struktúrához.
 Ehhez hasonló enumerációt már használtunk: Az \texttt{Option<T>} két variánssal térhet vissza,
 \texttt{None}, ami megfelel a más nyelvekbeli \texttt{null} értéknek, vagy
