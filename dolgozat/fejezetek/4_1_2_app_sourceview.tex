@@ -1,9 +1,9 @@
 \SubSection{Az \texttt{App} és a \texttt{SourceView}}
 
-\subsubsection{Az \texttt{ui} modul}
+\subsubsection{A \texttt{ui} modul}
 
 A felhasználói felülettel kapcsolatos forráskódokat az olvashatóság kedvéért egy modulba tesszük,
-az \texttt{ui} modulba.
+a \texttt{ui} modulba.
 A modulkészítés a Rust 2018-as kiadásában forrásfájlokon alapul -- 
 minden új forrásfájl egy új modult jelent (néhány kivétellel, mint például \texttt{build.rs}).
 Egy modulnak adhatunk al-modulokat, ha létrehozunk a forrásfájlával megegyező nevű könyvtárat (fájlrendszer-entitás értelemben),
@@ -23,7 +23,7 @@ Ezt \textit{újraexportálásnak} (re-export) hívják a Rust nyelvben.
 
 \subsubsection{Az applikáció}
 
-Következőnek az \texttt{ui/app.rs}-t hozzuk létre:
+Következőnek a \texttt{ui/app.rs}-t hozzuk létre:
 
 \lstinputlisting[firstline=13, lastline=42, language=Rust]{./kodreszletek/01_app.rs}
 
@@ -79,14 +79,14 @@ A Rust-ban a \texttt{return} utasítás megspórolható a pontosvessző elhagyá
 Ez azért lehetséges, mert a Rust-ban a metódus visszatérési értéke a benne legutoljára végrehajtott kifejezés.
 A pontosvessző hozzáadása egy kifejezéshez azt egy utasítássá teszi.
 
-A \texttt{Header} létrejöttével a következőkkel bővül az \texttt{ui/app.rs}:
+A \texttt{Header} létrejöttével a következőkkel bővül a \texttt{ui/app.rs}:
 
 \lstinputlisting[firstline=76, lastline=88, language=Rust]{./kodreszletek/01_app.rs}
 
 A \texttt{Header}-t létrehozzuk, és beállítjuk az ablakunk címsorának.
 Előtte persze behívjuk az \texttt{App} moduljába.
 
-A \texttt{super} itt az \texttt{ui} modulra utal, ezért nem szabad elfelednünk az \texttt{ui.rs}
+A \texttt{super} itt a \texttt{ui} modulra utal, ezért nem szabad elfelednünk a \texttt{ui.rs}
 fájlban sem az újraexportálást.
 
 \lstinputlisting[firstline=92, lastline=98, language=Rust]{./kodreszletek/01_app.rs}

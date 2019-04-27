@@ -78,7 +78,7 @@ ezért ez a tökéletes alkalom arra, hogy a Rust kölcsönzés-ellenőrző rend
 erőforrásokat felszabadítsuk -- mint például a GTK-s erőforrásokat a mi esetünkben.
 
 Utolsó lépésként a mentés funkció elkészítéséhez létrehozunk kettő segédmetódust,
-és ezeket az \texttt{ui/misc.rs} fájlba helyezzük.
+és ezeket a \texttt{ui/misc.rs} fájlba helyezzük.
 Ezek a 
 \begin{itemize}
     \item \verb+set_title(headerbar: &HeaderBar, path: &Path)+,
@@ -91,7 +91,7 @@ Ezek csak kényelmi metódusok, és implementációjuk triviális, ezért itt ne
 
 \subsubsection{Mentés: adatírás}
 
-Az elkészülések után létrehozzunk az \texttt{ui/save.rs} fájlt,
+Az elkészülések után létrehozzunk a \texttt{ui/save.rs} fájlt,
 és definiáljuk egy mentés művelet visszatérési lehetőségeit:
 
 \lstinputlisting[firstline=78, lastline=82, language=Rust]{./kodreszletek/02_save.rs}
@@ -197,6 +197,6 @@ fájl tartalmát (pontosabban, legenerálunk a tartalma alapján egy új hash sz
 vagy megtesszük azt, és átírjuk a fejléc címét a jelenlegi fájl elérési helyére,
 vagy nem teszünk semmit.
 
-Ezek után már csak egy feladatunk marad: az \texttt{ui.rs} fájlba belevinni a modulokat,
+Ezek után már csak egy feladatunk marad: a \texttt{ui.rs} fájlba belevinni a modulokat,
 illetve azokat publikusan elérhetővé tenni az UI modulon kívül, hogy az \texttt{App}
 fel tudja őket használni.
