@@ -8,104 +8,103 @@
 
 \Section{Követelmények}
 
-Ahhoz, hogy egy felhasználó-barát fejlesztőkörnyezetet készítsünk, fontos, hogy ne feledjük, hogy egy \emph{környezetet} készítünk: 
-azaz, az IDE-nek magában kell, hogy foglaljon mindent, ami szükséges lehet szoftverfejlesztéshez Rust-ban, legalább a standard könyvtár kezelése során. 
-Ebből következőleg az IDE fő célja az kell, hogy legyen, hogy a felhasználónak a lehető legkevesebbet kelljen az fejlesztői környezetét elhagyni -- 
-ha valamit szükséges neki megtenni, akkor azt fontos, hogy az IDE-n keresztül, illetve annak segítségével, tudja véghezvinni. 
+Ahhoz, hogy egy felhasználó-barát fejlesztőkörnyezetet készítsünk, fontos, hogy ne feledjük, hogy egy \emph{környezetet} készítünk.
+Az IDE-nek magába kell foglalnia mindent, amely szükséges lehet szoftverfejlesztéshez Rust-ban (legalább a standard könyvtár kezelése során). 
+Ebből következőleg az IDE fő célja az kell, hogy legyen, hogy a felhasználónak a lehető legkevesebbet kelljen a fejlesztői környezetét elhagynia. A szükséges műveleteket fontos, hogy az IDE-n keresztül, illetve annak segítségével, tudja elvégezni. 
 Ilyen környezeten kívüli elkerülendő dolgok például a terminál illetve parancssor használata fordításhoz, 
 a dokumentáció megtekintése \texttt{cargo doc}-on keresztül, vagy egy külső verziókövető szoftver használata.
 
-Nyilván a fejlesztőkörnyezet célja nem az, hogy ezeket a segédeszközöket leváltsa -- sőt, az IDE maga ezekkel fog kommunikálni! 
+Nyilván a fejlesztőkörnyezet célja nem az, hogy ezeket a segédeszközöket leváltsa, hanem ezekkel kell kommunikálnia. 
 A specializált szoftver elkerülhetetlenül többre lesz képes, mint a generalizált IDE, így a magasabb képességű programozó igényeit nem feltétlenül fogja kiszolgálni csak az IDE maga, 
-viszont az átlagos programozó szempontjából célszerű az, hogy a fejlesztés a lehető legkevesebb gondolatbeli kontextus-váltással járjon.
+viszont az átlagos programozó szempontjából célszerű az, hogy a fejlesztés során minél kevesebb olyan tényező legyen, amely kizökkentheti a munkamenetből.
 
-Az IDE céljait behatárolva felsorolhatjuk, hogy mire kell, hogy képes legyen a fejlesztőkörnyezet. 
-A szükséges funkciók a következők:
-
+Az IDE céljait behatárolva felsorolhatjuk, hogy mire kell, hogy képes legyen a fejlesztőkörnyezet. Az alábbi funkciók meglétét tekintjük szükségesnek.
 \begin{itemize}
+
 	\item A forráskódok szerkeszthetőek legyenek az IDE-n belül. Ez talán egy átlagos IDE legalapvetőbb követelménye. 
 	Elégséges az, hogy ha egyszerre egy fájlt tudunk megnyitni. 
-	Fontos itt a Rust nyelv kulcsszavainak kiemelése színezéssel és félkövéresítéssel, az automatikus zárójel-kiegészítés (ha \texttt{(}-et kezdünk, akkor a program automatikusan beillessze a megfelelő \texttt{)}-et is), 
-	illetve -összekapcsolás (a program ki kell, hogy emelje, hogy egy zárójelnek hol a párja).
+	Fontos itt a Rust nyelv kulcsszavainak kiemelése színezéssel és félkövéresítéssel, az automatikus zárójel-kiegészítés (ha zárójelet nyitunk, akkor a program automatikusan beillessze a megfelelő párját), 
+	illetve a program ki kell, hogy emelje, hogy egy zárójelnek hol a párja.
 	
-	\item Kapcsolódva a fenti ponthoz, az IDE-nek szükséges kódjavaslatokat feltenni a felhasználónak, mind új kód írásakor, és régi kód javításakor. 
-	Mint a legtöbb nyelvben, a Rust-ban is létezik egy \emph{nyelvszerver}, a \emph{Rust Language Server}\cite{rls}. 
+	\item Kapcsolódva a fenti ponthoz, az IDE-nek szükséges kódjavaslatokat felsorolni a felhasználónak, mind új kód írásakor, mind pedig a régi kód javításakor. 
+	Mint a legtöbb nyelvben, a Rust-ban is létezik egy \emph{nyelvszerver}, a \emph{Rust Language Server} \cite{rls}. 
 	A nyelvszerver szerepe pontosan ez, így szükséges lesz kommunikáció kiépítése az \emph{RLS}-sel. 
-	Ha valamiért ez nem sikerülne, akkor mi magunk is megoldhatunk egy hasonló funkciót a fordítóprogram és a \emph{racer}\cite{racer} segítségével -- 
-	az RLS maga is ezt csinálja. Ennek ellenére preferáltabb az RLS-sel dolgozó megoldás.\label{rls}
+	Ha valamiért ez nem sikerülne, akkor mi magunk is megoldhatunk egy hasonló funkciót a fordítóprogram és a \emph{racer} \cite{racer} segítségével.
+	Az RLS maga is ezt csinálja. Ennek ellenére célszerűbb az RLS-sre épülő megoldást használni \label{rls}.
+	\item Az IDE tudjon elvégezni lintelést, illetve adjon projektformázási javaslatokat. 
+	Az előbbi megvalósítható a \texttt{clippy} \cite{clippy} program segítségével, az utóbbi a \texttt{rustfmt}\cite{rustfmt} programmal.
 	
-	\item Az IDE tudjon elvégezni lintelést, illetve projektformázási javaslatokat. 
-	Az előbbi megvalósítható a \texttt{clippy}\cite{clippy} program segítségével, az utóbbi a \texttt{rustfmt}\cite{rustfmt} programmal.
-	
-	\item Szükséges, hogy a felhasználó tudja a projekthez kapcsolatos fájlok kezelését az IDE-n belülről. 
-	Ez alatt az is értetendő, hogy a felhasználó létre tudjon hozni cargo projekteket az IDE-n keresztül, illetve hogy be tudjon tölteni régi cargo projekteket az IDE-be. 
-	Fontos, hogy csak az számítson, hogy a betöltött projekt cargo-val lett létrehozva, ne az, hogy az IDE által. 
+	\item Szükséges, hogy a felhasználó tudja kezelni a projekthez tartozó fájlokat a közvetlenül az IDE-ből. 
+	Ez alatt az is értetendő, hogy a felhasználó létre tudjon hozni \textit{Cargo} projekteket az IDE-n keresztül, illetve hogy be tudjon tölteni már létező projekteket az IDE-be. 
+	Fontos, hogy csak az számítson, hogy a betöltött projekt \textit{Cargo}-val lett létrehozva, ne az, hogy az IDE által. 
 	Az IDE tárolhat információkat a projektról egy rejtett mappában, de ne legyen kötelező a projekt módosításához. 
-	Továbbá, az IDE-n belül fontos, hogy legyen a projekt fájlrendszerének egy fa-struktúrás reprezentációja, ami segítségével a felhasználó tudjon refaktorálást végezni a fájlokon, vagy a cargo követelményeit betartva hozhasson létre fájlokat 
+	Továbbá, az IDE-n belül fontos, hogy legyen a projekt fájlrendszerének egy fa-struktúrás reprezentációja, ami segítségével a felhasználó tudjon refaktorálást végezni a fájlokon, vagy a \textit{Cargo} követelményeit betartva hozhasson létre fájlokat 
 	(A Rust 2016-os verziója például megköveteli, hogy a modulmappák 'fő' forrásfájlja a \texttt{mod.rs} nevet kapja).
 	
-	\item Az IDE tudja a projektet lefordítani debuggoláshoz és kiadáshoz, tudja a projekt tesztjeit lefuttatni, és tudja a projekt problémáit leellenőrizni. 
-	Ezek viszonylag egyszerű cargo parancsmeghívások, a fontos rész az, hogy ezeket a felhasználó egy gombnyomással vagy billentyűkombinációval meg tudja hívni.
+	\item Az IDE tudja a projektet lefordítani hibakereséshez és kiadáshoz. Tudja a projekt tesztjeit lefuttatni, és tudja a projekt problémáit leellenőrizni. 
+	Ezek viszonylag egyszerű \textit{Cargo} parancsmeghívások, a fontos rész az, hogy ezeket a felhasználó egy gombnyomással vagy billentyűkombinációval el tudja érni.
 	
 	\item Az IDE tudjon dokumentációt szolgáltatni a felhasználónak a kód megadott részeiről. 
-	Ez a funkció valójában három különböző szinten kell, hogy létezzen:
+	Ez a funkció valójában három különböző szinten kell, hogy létezzen.
 	\begin{enumerate}
 		\item A kódszerkesztés közben az IDE-nek magyarázatot kell szolgáltatni az éppen fókuszban lévő kódrészletről. 
 		Funkció esetén a funkció paramétereiről és visszatérési értékeiről, struktúra esetén a publikus mezőkről, illetve mindkettő esetén egy rövid leírást kell szolgáltatnia róla.
 		
 		\item A felhasználó külön kérésére az IDE-nek meg kell nyitnia a megadott kódrészlethez kapcsolódó dokumentációt, ha létezik. 
-		Rust-ban szokás \texttt{cargo doc} segítségével weblap-alapú dokumentáció készítése, így az IDE-nek a háttérben kötelező a dokumentációt legenerálnia, és a megadott weblapot renderelnie magán belül.
+		Rust-ban szokás \texttt{cargo doc} segítségével legyen lehetőség weblap-alapú dokumentáció készítésére. Az IDE-nek a háttérben kötelező a dokumentációt legenerálnia, és a megadott weblapot renderelnie magán belül.
 		
-		\item Ha a felhasználó ezen kívül szeretne dokumentációt olvasni, akkor ezeket az IDE jelenítse meg a felhasználó megadott webböngészőjében. 
-		Ezt a lépést tekinthetjük túl specializáltnak az IDE-hez.
+		\item Ha a felhasználó ezen kívül szeretne dokumentációt olvasni, akkor ezeket az IDE jelenítse meg a felhasználó által megadott webböngészőben. 
+		(Ezt a lépést tekinthetjük túl specializáltnak az IDE-hez.)
 	\end{enumerate}
 	
 	\item Az IDE-nek szolgáltatnia kell alapvető verziókövetési támogatást. 
-	Mivel a git a legelterjedtebb verziókövető alkalmazás, ezért az IDE-nek tudnia kell git által változtatásokat feltölteni, letölteni, commit-olni, ágakat létrehozni.
+	Mivel a \textit{git} a legelterjedtebb verziókövető alkalmazás, ezért az IDE-nek tudnia kell \textit{git} által változtatásokat feltölteni, letölteni, \textit{commit}-olni, ágakat létrehozni.
 	
 	\item Végül, ha szükséges, az IDE legyen bővíthető. 
-	Hasonlóképpen a \emph{Visual Studio}-hoz, legyen lehetőség saját parancsok létrehozására, amikkel a felhasználó tetszőleges programokat hívhat meg. 
+	Hasonlóképpen a \emph{Visual Studio}-hoz. Legyen lehetőség saját parancsok létrehozására, amelyekkel a felhasználó tetszőleges programokat hívhat meg. 
 	Ezeket a kényelem kedvéért az IDE beillesztheti egy menübe, így a parancs meghívása nem igényelne, csak néhány kattintást.
 \end{itemize}
 
 \Section{Specifikáció}
 
-\SubSection{Külső követelmények}
+\SubSection{A készülő alkalmazás függőségei}
 
-Mivel egy grafikus szoftvert szeretnénk létrehozni, ezért legelőször egy widget könyvtárat kell megállapítani alapkövetelményként.
-A Rust widget-ökoszisztémája még nem fejlett, ezért nincs nagyon sok választási lehetőség: főként a GTK és a Qt.
-Végül is a GTK widget könyvtár mellett döntöttem, mert sokkal érettebb a Qt binding könyvtárakhoz képest.
+Mivel egy grafikus szoftvert szeretnénk létrehozni, ezért legelőször egy \textit{widget} könyvtárat kell megállapítani alapkövetelményként.
+A Rust widget-ökoszisztémája még nem fejlett, ezért nincs nagyon sok választási lehetőség: főként a GTK és a Qt az amelyeket támogat.
+Az ez irányú kutatások alapján a GTK widget könyvtár mellett döntöttem, mert sokkal érettebb a Qt binding könyvtárakhoz képest.
 
-Ha GTK, akkor szeretnénk a \texttt{GTKSourceView} projektet is függőséggé tenni, 
-mivel ez lehetőséget ad a könnyű kódszerkesztő létrehozására -- ez egy kibővített \texttt{GTKTextView} pontosan kódkezelésre,
-és támogat viszonylag sok programozási nyelvet, köztük a Rust-ot is.
+GTK esetében a \texttt{GTKSourceView} projekt, mint függőség fog megjelenni, 
+mivel ez lehetőséget ad a könnyű kódszerkesztő létrehozására.
+Ez egy kibővített \texttt{GTKTextView} pontosan kódkezelésre kifejlesztve,
+Viszonylag sok programozási nyelvet támogat, köztük a Rust-ot is.
 Emellett automatikusan számolja a sorokat, kiszínezi a megadott nyelv kulcsszavait, 
-kezeli a fehérhelyeket és behúzásokat kódnak megfelelően, és sok más.
-Fontos, hogy a \texttt{GTKSourceView} támogatás csak a Rust-GTK \texttt{v3\_22} verziójától elérhető.
+kezeli a fehérhelyeket és behúzásokat kódnak megfelelően.
+Fontos itt megjegyezni, hogy a \texttt{GTKSourceView} támogatás csak a Rust-GTK \texttt{v3\_22} verziójától elérhető.
 
 A \texttt{GTKSourceView}-ben lévő szöveg kirajzolásához szükséges lesz a \texttt{Pango} könyvtár behívása.
-Egyelőre itt további követelmény vagy érdekesség nincs -- viszont, ha később azt szeretnénk, 
+Egyelőre itt további követelmény nincs. A később ha azt szeretnénk, 
 hogy a dokumentációt ne külső webböngészőben jelenítsük meg, hanem a programon belül, akkor több haszna is lehet ennek a könyvtárnak.
 
 A billentyű-kombinációkhoz szükséges lesz behívni a \texttt{GDK} könyvtárat, hogy az ablak által kapott
 billentyű-lenyomás jelzéseket elkaphassuk, feldolgozhassuk, és értelmezhessük.
 
-Végül, szükséges lesz egy könyvtár, aminek segítségével össze tudunk hasonlítani két szövegblokkot.
+Végül, szükséges lesz egy könyvtár, amely segítségével össze tudunk hasonlítani két szövegblokkot.
 Erre egy megoldás a SHA kriptográfiai függvény, aminek egy SHA-3 implementációját a \texttt{tiny-keccak} könyvtár szolgáltatja.
 
-Összességében, a következő Rust "ládákra" (Rust csomagokra) lesz szükségünk a minimális funkciókhoz:
+% TODO: Részletezni kellene, hogy erre a fajta összehasonlításra miért van szükség.
 
+Összességében, a következő Rust "ládákra" (Rust csomagokra) lesz szükségünk a minimális funkciókhoz:
 \begin{itemize}
-	\item \texttt{gtk} (\texttt{v3\_22} funkcióval legalább)
-	\item \texttt{gdk}
-	\item \texttt{pango}
-	\item \texttt{sourceview}
-	\item \texttt{tiny-keccak}
+	\item \texttt{gtk} (\texttt{v3\_22} funkcióval legalább),
+	\item \texttt{gdk},
+	\item \texttt{pango},
+	\item \texttt{sourceview},
+	\item \texttt{tiny-keccak}.
 \end{itemize}
 
 Ezen túl, mint már azt \myaref{rls} részben is említettük, a fejlesztőkörnyezeti funkciókhoz szükségünk lesz arra,
 hogy a Rust nyelvszerverével, az RLS-sel kommunikáljunk.
-Lehetne az RLS-t meghívni a kódban könyvtárként, de az LSP-n\cite{lsp} alapuló nyelvszerverek lehetőséget
+Lehetne az RLS-t meghívni a kódban könyvtárként, de az LSP-n \cite{lsp} alapuló nyelvszerverek lehetőséget
 adnak a standard bemeneti és kimeneti csatornákon való kommunikációra, 
 így elégséges az, ha gyermekfolyamatként meghívjuk az RLS-t.
 A csatornák kezelésére a Rust standard könyvtára lehetőséget ad az \texttt{io} modul \texttt{stdin()}
@@ -113,7 +112,7 @@ A csatornák kezelésére a Rust standard könyvtára lehetőséget ad az \textt
 Az RLS továbbá követelményként a Rust forráskódját igényli a javaslatok és dokumentáció megjelenítéshez
 a standard könyvtárban lévő struktúrákhoz és metódusokhoz.
 
-Az LSP alapú nyelvszerverek JSON-RPC\cite{json-rpc} távoli-eljáráshívás protokoll alapján kommunikálnak
+Az LSP alapú nyelvszerverek JSON-RPC \cite{json-rpc} távoli-eljáráshívás protokoll alapján kommunikálnak
 a kliens programokkal, ezért szükség lesz egy JSON szerializáló és deszerializáló könyvtárra is.
 Erre a legelterjedtebb megoldás a \texttt{serde} könyvtár, vagyis a mi esetünkben a \texttt{serde-json} alkönyvtára.
 
@@ -122,17 +121,14 @@ Ehhez \myaref{cargo_mention} részben is említett Cargo csomagkezelőt fogjuk h
 
 Mind az RLS-t, mind a Cargo-t gyermekfolyamatként kell majd meghívnunk.
 A Rust standard könyvtárában, a \texttt{process} modulban létező \texttt{Command} struktúra
-lehetőséget az a gyermekfolyamatok létrehozására, illetve azok standard bemenetének és kimenetének kezelésére.
+lehetőséget ad a gyermekfolyamatok létrehozására, illetve azok szabványos bemenetének és kimenetének kezelésére.
 
-Így a fejlesztőkörnyezet szemszögéből az alábbiakkal bővül ki a követelménylista:
-
+A fejlesztőkörnyezet szemszögéből az alábbiakkal bővül ki a követelménylista:
 \begin{itemize}
-	\item RLS
-	\begin{itemize}
-		\item Rust forráskódja
-	\end{itemize}
-	\item Cargo
-	\item \texttt{serde}(\texttt{-json})
+	\item RLS,
+	\item Rust forráskódja,
+	\item Cargo,
+	\item \texttt{serde}(\texttt{-json}).
 \end{itemize}
 
 \SubSection{A program felépítése}
@@ -152,31 +148,30 @@ ami pontosan erre a célra lett létrehozva.
 így akkor is lezárná az erőforrást, ha biztosan tudjuk, hogy az azt éppen elérő olvasó nem módosítaná.
 
 \label{active_metadata}
-Illetve a felesleges fájlkiolvasások megspórolása érdekében nem a fájl tartalmával fogunk dolgozni főképp.
-Létrehozunk egy \texttt{ActiveMetadata} struktúrát, ami magában tárolja a fájl elérési helyét,
-illetve a legutóbb mentett szöveg keccak hash szummáját.
+A felesleges fájlkiolvasások megspórolása érdekében nem a fájl tartalmával fogunk dolgozni főképp.
+Létrehozunk egy \texttt{ActiveMetadata} struktúrát, ami magában tárolja a fájl elérési útvonalát,
+illetve a legutóbb mentett szöveg \textit{keccak hash} szummáját.
 A fájl valós tartalmával tulajdonképpen soha nem hasonlítunk össze.
 Ez nem feltétlenül baj, csak fejlettebb szövegszerkesztőknél található olyan funkció, ami felismeri
 egy külső fájl változását, például \textit{Visual Studio Code}.
-Ha mégis probléma, akkor a jövőben kiküszöbölhetjük egy fájl-figyelő rendszer bevezetésével \textit{Visual Studio Code} módjára,
+Ha mégis probléma adódna ebből, akkor a jövőben kiküszöbölhetjük egy fájl-figyelő rendszer bevezetésével a \textit{Visual Studio Code} mintájára,
 vagy csak figyelmeztethetjük a felhasználót mentéskor, hogy a fájlt külső programok módosították utolsó mentés óta,
 és felajánlhatunk felülírási és elvetési opciókat.
 
-Szükségünk lesz továbbá megint a \texttt{sync} modulból az \texttt{Arc} struktúrára.
+Szükségünk lesz továbbá ismét a \texttt{sync} modulból az \texttt{Arc} struktúrára.
 Ez lehetőséget ad az atomikus referencia-számolásra.
 Számunkra ez azért szükséges, mert az \texttt{App} jelenlegi fájl \texttt{ActiveMetadata}-ját
 a grafikus felület legtöbb elemének el kell érnie.
-A \textit{Mentés}, \textit{Mentés Másként} és \textit{Megnyitás} gombok mind módosítják legalább a keccak-szummát,
+A \textit{Mentés}, \textit{Mentés Másként} és \textit{Megnyitás} gombok mind módosítják legalább a keccak-ellenőrző összegét,
 de például az utóbbi kettő esetében a fájl elérési helyét is (hacsak a felhasználó nem ugyanabba a fájlba ment,
 vagy ugyanazt a fájlt nyitja meg).
-Ezelőtt \myaref{subsec:ownership_mentioned} részben már említve volt a Rust egyedi birtoklás rendszere.
+Ezelőtt \myaref{subsec:ownership_mentioned} részben már említésre került a Rust egyedi birtoklás rendszere.
 Ez megakadályozza, hogy mozgatás után elérjük a mozgatott erőforrást, és a gomblenyomás jelzés
-továbbmozgatná a jelenlegi fájl metaadatokat a meghívott mentés vagy megnyitás metódusba
-(bár igazából a birtoklás rendszer miatt már előbb is megbukna a kód, mert a jelzés-meghívott metódus
-összecsatolás maga szükségessé tenné a metaadat-erőforrás mozgatását).
+továbbmozgatná a jelenlegi fájl metaadatokat a meghívott mentés vagy megnyitás metódusba. A birtoklás rendszer miatt már előbb is megbukna a kód, mert a jelzés-meghívott metódus
+összecsatolás maga szükségessé tenné a metaadat-erőforrás mozgatását.
 Az \texttt{Arc} struktúra \texttt{clone()} metódusa lemásolja az \texttt{Arc} struktúrát,
 viszont a létrejövő struktúra ugyanarra az erőforrásra mutat, és az erőforrásra mutató \texttt{Arc}-ok
-száma nyilván van tartva -- ha már nem mutat semmi az erőforrásra, akkor elpusztul az erőforrás maga is.
+száma nyilván van tartva. Amennyiben már nem mutat semmi az erőforrásra, akkor elpusztul az erőforrás maga is.
 Az \texttt{Arc} működése tekinthető hasonlónak a mutatókhoz szemétgyűjtő mechanizmussal rendelkező nyelvekben.
 
 Az \texttt{Arc} struktúrát még egy másik helyen használjuk, a teljes képernyős mód kezelésénél.
@@ -227,7 +222,7 @@ mivel a parancsmeghívás-építő nem kötelezi a parancs azonnali meghívásá
 Továbbá, a Cargo parancshívások argumentum listái nem változnak túlságosan nagy mértékben,
 hogy azt szükséges legyen minden esetben újraépíteni meghívás előtt memória-takarékosság érdekében.
 
-A következő alapvető Cargo parancsokat érdemes implementálni:
+A következő alapvető Cargo parancsokat érdemes implementálni.
 
 \begin{itemize}
     \item \verb+cargo new --bin [név]+: új bináris Cargo projekt készítése. 
@@ -247,7 +242,7 @@ A következő alapvető Cargo parancsokat érdemes implementálni:
 
 Az RLS-es való kommunikációt a \texttt{Content} struktúra fogja kezelni.
 A \texttt{Source} struktúra egy forrásfájlt kezel, és bár általában a jelenlegi fájlhoz szeretnénk
-nyelvszerver segítséget, a nyelvszervernek tudnia kell az egész projektről a segítség ajánlásához.
+nyelvszerver támogatást, a nyelvszervernek tudnia kell az egész projektről a segítség ajánlásához.
 A gyermekfolyamat létrehozásakor az \texttt{.stdout(Stdio::piped())} és az\\ \texttt{.stdin(Stdio::piped())}
 építési módosítókat megadva a gyermekfolyamat be- és kimeneti csatornái elérhetőek a \texttt{child.stdin}
 és a \texttt{child.stdout} struktúrákon keresztül, és ezekből szabadon lehet írni és olvasni a program futása alatt.
