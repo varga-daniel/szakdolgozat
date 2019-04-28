@@ -9,14 +9,16 @@ Mivel a program Rust nyelvben íródott, és a program mivolta egy Rust fejleszt
 
 \Section{Fájlkezelés}
 
-\begin{wrapfigure}{r}{0.4\textwidth}
+\begin{figure}[h]
     \centering
-    \includegraphics[width=0.4\textwidth]{nevtelen-fajl}
-\end{wrapfigure}
+    \includegraphics[width=0.6\textwidth]{nevtelen-fajl}
+    \caption{Mentetlen, névtelen fájl.}
+    \label{fig:nevtelen-fajl}
+\end{figure}
 
 A fájlkezelési műveletek teszteléséhez létrehozunk egy fájlt, ami egyetlen metódust tartalmaz,
 és kiíratja, hogy "Helló világ!". 
-Láthatjuk, hogy ahogy a pufferbe szöveget viszünk be, a program címéhez hozzá kerül egy "*",
+Láthatjuk \myaref{fig:nevtelen-fajl} ábrán, hogy ahogy a pufferbe szöveget viszünk be, a program címéhez hozzá kerül egy "*",
 jelezve, hogy a puffer eltér a várttól -- ebben az esetben nincs fájl a háttértáron,
 így amíg van valami a pufferben, az mindig mentetlen módosításnak számít.
 
@@ -25,23 +27,31 @@ néven a Rozsda IDE ládájába.
 
 % TODO: Itt a képek lehetnek oldal szélességűek. Mindegyik alá kellene felirat, és be kellene őket hivatkozni valahol a szövegben!
 
-\begin{wrapfigure}{l}{0.35\textwidth}
+\begin{figure}[h]
     \centering
-    \includegraphics[width=0.35\textwidth]{elmentett-fajl}
-    \includegraphics[width=0.35\textwidth]{kilepes-mentetlen-valtozasokkal}
-\end{wrapfigure}
+    \includegraphics[width=0.6\textwidth]{elmentett-fajl}
+    \caption{Elmentett, módosítatlan fájl.}
+    \label{fig:elmentett-fajl}
+\end{figure}
 
 Itt mind a \texttt{Ctrl+S} billentyűkombináció, mind a \textit{Fájl $\,\to\,$ Mentés} vagy \textit{Fájl $\,\to\,$ Mentés Másként}
 lehetőségek sikeresen elmentik a fájlt a felhasználó által kiválasztott helyre.
 A mentés után a program címe a szerkesztett fájl elérési útvonalára változik,
-míg alcímnek az azt tartalmazó könyvtár kerül.
+míg alcímnek az azt tartalmazó könyvtár kerül, lásd \myaref{fig:elmentett-fajl} ábrát.
 Ha ezek után tovább szerkesztjük a fájlt, akkor megint észrevehetjük,
 hogy a szerkesztéssel a cím egy "*" jelet kap, ha a tartalom eltér a háttértáron lévő fájl tartalmától.
-Ha nem mentjük a változtatásainkat, 
+Láthatjuk továbbá  \myaref{fig:mentetlen-fajl} ábrán, hogy ha nem mentjük a változtatásainkat, 
 hanem inkább bezárjuk a fájlt a \textit{Fájl $\,\to\,$ Bezárás} menüelemmel vagy a \texttt{Ctrl+W} billentyűkombinációval,
 vagy bezárjuk az egész programot a \textit{Fájl $\,\to\,$ Kilépés} elemmel vagy a \texttt{Ctrl+Q} billentyűkombinációval,
 akkor a program figyelmeztet, hogy mentetlen változtatásaink vannak,
 és felajánlja, hogy azokat mentsük, vagy elvessük.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.6\textwidth]{kilepes-mentetlen-valtozasokkal}
+    \caption{A fájl bezárása, miközben mentetlen változtatásaink vannak.}
+    \label{fig:mentetlen-fajl}
+\end{figure}
 
 Az előbbi lehetőség választása esetén megtörténik a mentés,
 az utóbbi esetén viszont a program kiüríti a belső pufferét, és elfelejti a háttértári fájl elérési útvonalát.
@@ -49,59 +59,79 @@ Mindkét döntés esetében megtörténik a kívánt művelet (bezárás vagy ki
 
 \Section{Projektkezelés}
 
-\begin{wrapfigure}{l}{0.4\textwidth}
+\begin{figure}[h]
     \centering
-    \includegraphics[width=0.4\textwidth]{projekt-megnyitas}
-\end{wrapfigure}
+    \includegraphics[width=0.6\textwidth]{projekt-megnyitas}
+    \caption{Cargo ládát tartalmazó könyvtár kiválasztása.}
+    \label{fig:projekt-megnyitas}
+\end{figure}
 
 Ha a \textit{Cargo $\,\to\,$ Megnyitás} lehetőséget választjuk, akkor A program felajánlja
 nekünk egy tetszőleges könyvtár kiválasztását a háttértárainkon.
-Itt tetszőlegesen navigálhatunk, illetve, ha szükséges, létrehozhatunk új könyvtárakat is.
+Itt tetszőlegesen navigálhatunk, illetve, ha szükséges, létrehozhatunk új könyvtárakat is, lásd \myaref{fig:projekt-megnyitas} ábra.
 
 Ha egy olyan könyvtárat választottunk, ami tartalmaz egy \texttt{Cargo.toml} fájlt,
 akkor a projektmegnyitás sikeresen betölti a ládát.
 Fontos nem elfelejteni, hogy ilyenkor új fájl nem töltődik be,
 így még mindig a legutóbb megnyitott fájlt fogjuk látni a módosításainkkal, ha vannak.
 
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.6\textwidth]{projekt-megnyitas-sikeres}
+    \caption{Láda megnyitás.}
+    \label{fig:projekt-megnyitas-sikeres}
+\end{figure}
+
 Sikeres projektmegnyitás esetén a láda főkönyvtárának neve beillesztődik a program címébe,
-a fájl (vagy a Rozsda IDE) neve után, egy kötőjellel elválasztva attól.
-
-Ha olyan könyvtárat választunk ki, ami nem tartalmaz egy \texttt{Cargo.toml} fájlt,
-akkor egy felugró ablak értesít minket arról, hogy a megnyitni kívánt projekt nem
-érvényes Rust láda.
-A felugró ablakot elfogadva bezáródik mind az, mind a könyvtárválasztó ablak.
-
-Mint a sikeres projektmegnyitás, a megnyitott fájlunkra ez sincs kihatással.
+a fájl (vagy a Rozsda IDE) neve után, egy kötőjellel elválasztva attól (\myref{fig:projekt-megnyitas-sikeres} ábra).
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.4\textwidth]{projekt-megnyitas-sikeres}
-    \includegraphics[width=0.4\textwidth]{projekt-megnyitas-sikertelen}
+    \includegraphics[width=0.6\textwidth]{projekt-megnyitas-sikertelen}
+    \caption{A felhasználó nem egy Rust ládát választott megnyitásra.}
+    \label{fig:projekt-megnyitas-sikertelen}
 \end{figure}
+
+Ha olyan könyvtárat választunk ki, ami nem tartalmaz egy \texttt{Cargo.toml} fájlt,
+akkor egy felugró ablak értesít minket arról, hogy a megnyitni kívánt projekt nem
+érvényes Rust láda (\myref{fig:projekt-megnyitas-sikertelen} ábra).
+A felugró ablakot elfogadva bezáródik mind az, mind a könyvtárválasztó ablak.
+
+Mint a sikeres projektmegnyitás, a megnyitott fájlunkra ez sincs kihatással.
 
 Ha a \textit{Cargo $\,\to\,$ Új könyvtár} vagy a \textit{Cargo $\,\to\,$ Új bináris}
 lehetőségeket választjuk ki, akkor a program felajánlja nekünk,
 hogy kiválasszunk illetve készítsünk egy új (fájlrendszeri) könyvtárat,
 amibe aztán előkészíti nekünk a könyvtár vagy bináris láda alapvető elemeit.
 
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.6\textwidth]{uj-konyvtar}
+    \caption{Egy frissen létrehozott Rust könyvtár forrásfájlja.}
+    \label{fig:uj-konyvtar}
+\end{figure}
+
 Az újonnan létrehozott láda tartalmát megvizsgálva az előbbi esetben egy \texttt{lib.rs}
-fájlt fogunk találni az \texttt{src/} könyvtárban, ami el van látva egy példa teszttel, 
-az utóbbi esetben egy \texttt{main.rs} fájlt, amiben egy alapvető \texttt{main()} metódus található.
+fájlt fogunk találni az \texttt{src/} könyvtárban (\myref{fig:uj-konyvtar} ábra), ami el van látva egy példa teszttel, 
+az utóbbi esetben egy \texttt{main.rs} fájlt, amiben egy alapvető \texttt{main()} metódus található (\myref{fig:uj-binaris}).
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.4\textwidth]{uj-konyvtar}
-    \includegraphics[width=0.4\textwidth]{uj-binaris}
+    \includegraphics[width=0.6\textwidth]{uj-binaris}
+    \caption{Egy frissen létrehozott Rust bináris program forrásfájlja.}
+    \label{fig:uj-binaris}
 \end{figure}
 
 \newpage
 
 \Section{Cargo parancsok}
 
-\begin{wrapfigure}{l}{0.30\textwidth}
+\begin{figure}[h]
     \centering
-    \includegraphics[width=0.30\textwidth]{forditas}
-\end{wrapfigure}
+    \includegraphics[width=0.5\textwidth]{forditas}
+    \caption{A Rozsda IDE lefordítása saját magán belül.}
+    \label{fig:forditas}
+\end{figure}
 
 A Rozsda IDE ládájának megnyitása után kipróbálhatjuk a Cargo parancsokat.
 Mivel ahhoz, hogy a Rozsda IDE-t futtassam, le kellett fordítanom,
@@ -110,14 +140,22 @@ Mivel ahhoz, hogy a Rozsda IDE-t futtassam, le kellett fordítanom,
 Bár egy felugró ablak megjelenik, a \texttt{cargo clean} parancs nem ad kimenetet,
 így csak egy felugró ablakot kapunk, ami értesít minket a parancs lefutásáról.
 
-Ezek után, ha módosítjuk a \texttt{main.rs}-t, hogy hívja meg az újonnan készített
+Ezek után, ha módosítjuk a \texttt{main.rs}-t, hogy hívja meg a
 \texttt{hello.rs} fájlunkból a \texttt{hello\_world()} metódust,
 lefordíthatjuk a ládát a \textit{Cargo $\,\to\,$ Fordítás} lehetőséggel.
+A Rozsda IDE fordításának eredménye \myaref{fig:forditas} ábrán látható.
 
 Fordítani külön nem szükséges.
 Ha a \textit{Cargo $\,\to\,$ Futtatás} lehetőséget választottuk volna,
 a ládának ugyanúgy le kell fordulnia, viszont a teljes tesztelés érdekében
 először fordítunk, majd utána futtatjuk a programot.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.6\textwidth]{rozsda-ide-rozsda-ideben}
+    \caption{A Rozsda IDE futtatása Rozsda IDE-ben.}
+    \label{fig:rozsda-ide-magaban}
+\end{figure}
 
 A legtöbb parancs, ami szükségelteti a program lefordulását (mint az \textit{Ellenőrzés,}
 vagy a \textit{Tesztek futtatása}), ugyanúgy meghívja a \texttt{cargo build} parancsot.
@@ -128,13 +166,14 @@ akkor a fordítás idejéről is.
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.4\textwidth]{rozsda-ide-rozsda-ideben}
-    \includegraphics[width=0.4\textwidth]{rozsda-ide-visszateres}
+    \includegraphics[width=0.6\textwidth]{rozsda-ide-visszateres}
+    \caption{Visszatérési üzenet a Rozsda IDE-ből és a futtatásból.}
+    \label{fig:visszateres}
 \end{figure}
 
 A program lefordulásával futtathatjuk is a ládánkat.
-A jobbra látható képen elindítottam a Rozsda IDE-t a Rozsda IDE-ben.
+A futás eredményét \myaref{fig:rozsda-ide-magaban} ábrán láthatjuk.
 A program működése megegyezik az őt fordító és futtató programéval, bár kettő
 \texttt{println!}-nel több parancs van benne.
 
-Ezeket a kiíratásokat a program befejeztetése után megkapjuk.
+Ezeket a kiíratásokat a program befejeztetése után megkapjuk (\myref{fig:visszateres} ábra).
