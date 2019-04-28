@@ -1,0 +1,35 @@
+\chapter*{Felhasználói dokumentáció}
+
+A program képes Rust forráskódok létrehozására, szerkesztésére, illetve Cargo ládák
+manipulálására.
+A forráskód-szerkesztés és a Cargo parancsok kiadása ládára párhuzamosan léteznek egymás mellett.
+
+Új forrásfájl létrehozásához a felhasználó írhat a program ablakának kódszerkesztő részébe,
+majd egy \texttt{Ctrl+S} gomblenyomással, vagy a \textit{Fájl $\,\to\,$ Mentés (Másként)} menüelemmel
+elmentheti azt a háttértáron.
+
+Meglévő forrásfájl szerkesztéséhez a \texttt{Ctrl+O} gomblenyomással, vagy a \textit{Fájl $\,\to\,$ Megnyitás}
+menüelemmel a felhasználó kiválaszthat egy tetszőleges \texttt{.rs} kiterjesztésű fájlt a háttértáron.
+A kiválasztott fájl tartalma bekerül a kódszerkesztő pufferjébe, és szerkeszthetővé válik.
+
+Ha új forrásfájlt szeretnénk létrehozni, de már megnyitottunk egyet, akkor a \texttt{Ctrl+W} gomblenyomással, 
+vagy a \textit{Fájl $\,\to\,$ Bezárás} menüelemmel bezárhatjuk a jelenlegi fájlt.
+Ha vannak elmentetlen módosításaink, akkor a program rákérdez, hogy szeretnénk-e menteni azokat,
+vagy elvetjük őket.
+Ugyanez elérhető a \texttt{Ctrl+N} billentyű-kombinációval, illetve a \textit{Fájl $\,\to\,$ Új} menüelemmel.
+
+Új Cargo ládákat a \textit{Cargo $\,\to\,$ Új könyvtár} illetve a \textit{Cargo $\,\to\,$ Új bináris}
+menüelemekkel lehet létrehozni, igényeinktől függően.
+Létrehozás után a új Cargo láda megnyílik a programban -- természetesen a megnyitott fájllal nem történik semmi.
+Ha meglévő ládát szeretnénk megnyitni, akkor válasszuk a \textit{Cargo $\,\to\,$ Megnyitás} lehetőséget.
+Egy könyvtárat csak akkor nyithatunk meg ládaként, ha az tartalmaz egy \texttt{Cargo.toml} fájlt!
+A megnyitott ládát a \textit{Cargo $\,\to\,$ Bezárás} menüelemmel lehet bezárni.
+
+Láda-megnyitás után, ha a ládánkat le szeretnénk fordítani, akkor válasszuk a \textit{Cargo $\,\to\,$ Fordítás} lehetőséget.
+A kódhelyességet a \textit{Cargo $\,\to\,$ Ellenőrzés} menüelemmel tudjuk leellenőriztetni.
+Ha a ládánkban léteznek tesztek, akkor azokat a \textit{Cargo $\,\to\,$ Tesztek futtatása} menüelemmel
+lehet futtatni.
+A \textit{Cargo $\,\to\,$ Takarítás} menüelem kitörli az eddigi fordítások eredményeit, ha arra van szükségünk.
+Végül ha bináris ládával dolgozunk, akkor a \textit{Cargo $\,\to\,$ Futtatás} elemmel elindíthatjuk a programunkat.
+
+A programot a \texttt{Ctrl+Q}, vagy a \textit{Fájl $\,\to\,$ Kilépés} lehetőséggel zárhatjuk be.
