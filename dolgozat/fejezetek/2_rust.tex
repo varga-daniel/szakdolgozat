@@ -1,105 +1,108 @@
 \Chapter{A Rust programozási nyelv}
 \label{sec:rust}
 
-A \textit{Rust} egy multi-paradigmájú rendszerprogramozási nyelv,\cite{oldpage:main},
-ami a biztonságos kódra helyez hangsúlyt, főként a programok biztonságos párhuzamosítására.\cite{mostlysafety, oldpage:faq:project}
-Bár a Rust szintaktikailag hasonlít a C++-ra,\cite{rustvscpp} úgy van megtervezve, hogy jobb memória-biztonságot nyújtson a C++-hoz legalább hasonló vagy jobb teljesítmények mellett.
+A \textit{Rust} egy multi-paradigmájú rendszerprogramozási nyelv,
+amely a biztonságos kódra helyez hangsúlyt, illetve a programok biztonságos párhuzamosítására \cite{oldpage:main,mostlysafety,oldpage:faq:project}.
+Bár a Rust szintaktikailag hasonlít a C++-ra, úgy tervezték, hogy jobb memória-biztonságot nyújtson a C++-hoz legalább hasonló vagy jobb teljesítmények mellett \cite{rustvscpp}.
 
-A nyelvet eredetileg \textit{Graydon Hoare} tervezte a \textit{Mozilla Research-nél}, Dave Herman, Brendan Eich, és mások támogatásával.\cite{rust:designedby}
-A tervezők tovább fejlesztették a nyelvet a Servo internetböngésző-motor\cite{servo:ars, servo:mozilla} és a Rust fordító fejlesztése alatt.
+A nyelvet eredetileg \textit{Graydon Hoare} tervezte a \textit{Mozilla Research-nél}, Dave Herman, Brendan Eich, és mások támogatásával \cite{rust:designedby}.
+A tervezők tovább fejlesztették a nyelvet a \textit{Servo} internetböngésző-motor \cite{servo:ars, servo:mozilla} és a Rust fordító fejlesztése alatt.
 A fordító maga nyílt forráskódú, duplán licencelt az MIT és Apache licencek alatt.
 
 A következőekben leírjuk a Rust nyelv történetét, összehasonlítjuk a C++ nyelvvel,
-majd bemutatjuk a Rust olyan egyedi tulajdonságait, amik az összehasonlításban nem jöttek elő.
+majd bemutatjuk a Rust olyan egyedi tulajdonságait, amelyek az összehasonlításban nem jöttek elő.
 
 \Section{A Rust története}
 
-A nyelv 2006-ban nőtt ki Mozilla alkalmazott Graydon Hoare egy személyes pro\-jekt\-jé\-ből,\cite{oldpage:faq:project}.
-Bár a nyelv nevének eredetére nem emlékszik, azt állítja, hogy a projekt a nevét a rozsdagombák családja után kapta.\cite{rust:name}
+A nyelv 2006-ban Graydon Hoare (Mozilla alkalmazott) egy személyes projektjéből nőtt ki \cite{oldpage:faq:project}.
+Bár a nyelv nevének eredetére nem emlékszik, azt állítja, hogy a projekt a nevét a rozsdagombák családja után kapta \cite{rust:name}.
 
-Mozilla 2009-ben kezdte el támogatni a projektet, mikor Graydon Hoare bemutatta a Rust prototípusát az akkori menedzserének.\cite{interview:graydon} 
-Mozilla érdeklődését akkor keltette fel a projekt, amikor a nyelv már eléggé érett volt ahhoz, hogy bemutassa a fő koncepcióit, és teszteket lehessen rajta futtatni,\cite{oldpage:faq:project} 
-majd felállított egy csapatot, aminek feladata az volt, hogy a nyelven tovább dolgozzon azzal a céllal, hogy beépíthessék azt az akkor fejlesztés alatt álló Servo projektjükbe.\cite{oldpage:faq:project, interview:graydon}
-A projektet 2010-ben kiáltotta ki Mozilla.\cite{talk:servo}
-Még ugyanabban az évben a csapat fókuszt váltott, és az eredeti OCaml-ben írott fordító helyett elkezdtek dolgozni egy önmagát lefordítani képes fordítón, Rustban.\cite{rust:compilerwork}
-Ez a fordító a \texttt{rustc} nevet kapta, és 2011-ben le is fordította magát sikeresen.\cite{rust:successful_compile} A \texttt{rustc} LLVM-et használ backend-ként.
+A Mozilla 2009-ben kezdte el támogatni a projektet, mikor Graydon Hoare bemutatta a Rust prototípusát az akkori menedzserének \cite{interview:graydon}.
+A cég érdeklődését akkor keltette fel a projekt, amikor a nyelv már eléggé érett volt ahhoz, hogy bemutassa a fő koncepcióit, és teszteket lehessen rajta futtatni \cite{oldpage:faq:project}.
+Összegyűjtött egy csapatot, amelynek az volt a feladata, hogy a nyelven tovább dolgozzon azzal a céllal, hogy beépíthessék azt az akkor fejlesztés alatt álló Servo nevű projektjükbe \cite{oldpage:faq:project, interview:graydon}.
+A projektet 2010-ben hozta nyilvánosságra a Mozilla \cite{talk:servo}.
+Még ugyanabban az évben a csapat fókuszt váltott, és az eredeti \textit{OCaml}-ben írott fordító helyett elkezdtek dolgozni egy önmagát lefordítani képes fordítón Rustban \cite{rust:compilerwork}.
+Ez a fordító a \texttt{rustc} nevet kapta, és 2011-ben le is fordította magát sikeresen \cite{rust:successful_compile}. A \texttt{rustc} LLVM-et használ backend-ként.
 
-A Rust fordító első számozott pre-alfa kiadása 2012. januárjában jött ki.\cite{rust:first_release}
-A fejlesztők 2015. május 15-én adták ki a Rust 1.0-át, a nyelv és fordító első stabilis kiadását.\cite{rust:1_0:blog, rust:version_history}
-Az 1.0-ás kiadás után további kiadások hat hetente történnek, és emellett fut két további fejlesztési ág is, az alfa és a béta ágak, szintúgy hat hetes időtartamokkal.\cite{rust:release_cycle}
-Ez a rendszer megakadályozza, hogy nem stabilis funkciók kerüljenek a nyelve.\cite{rust:stability}
+A Rust fordító első számozott pre-alfa kiadása 2012. januárjában jött ki \cite{rust:first_release}.
+A fejlesztők 2015. május 15-én adták ki a Rust 1.0-át, a nyelv és fordító első stabilis kiadását \cite{rust:1_0:blog, rust:version_history}.
+Az 1.0-ás kiadás után további kiadások hat hetente történnek, és emellett fut két további fejlesztési ág is, az \textit{alfa} és a \textit{béta} ágak, szintúgy hat hetes időtartamokkal adták közre az új változatokat \cite{rust:release_cycle}.
+Ez a rendszer megakadályozza, hogy nem stabil funkciók kerüljenek a nyelvbe \cite{rust:stability}.
 
 A Rust objektum-rendszere sokat változott az első verziókban. A 0.2-es verzió osztályokat hozott a nyelvbe, amit aztán a 0.3-as verzió tovább fejlesztett a destruktorok és az interfészek által nyújtott polimorfizmusi lehetőségekkel.
-A 0.4-es verzió végül lecserélte az osztályokat struktúrákra, behozott egy tulajdonság (trait) rendszert a öröklődés lehetőségének biztosítására, 
-beleolvasztotta az interfészeket a tulajdonságokba (és eltörölte azokat, mint különálló funkció).\cite{rust:version_history}
+A 0.4-es verzió végül lecserélte az osztályokat struktúrákra, behozott egy tulajdonság (\textit{trait}) rendszert a öröklődés lehetőségének biztosítására, 
+beleolvasztotta az interfészeket a tulajdonságokba (és eltörölte azokat, mint különálló funkció) \cite{rust:version_history}.
 
 A 0.9-es és 0.11-es verziók között a Rust rendelkezett két beépített mutató típussal, \texttt{\~} és \texttt{@}, hogy leegyszerűsítse a fő memória modellt.
-Ezeket a 0.11-es verzióban lecserélték a \texttt{Box} és a \texttt{Gc} (majd a \texttt{Gc} eltűnt a 0.12 verzióban).\cite{rust:version_history}
+Ezeket a 0.11-es verzióban lecserélték a \texttt{Box} és a \texttt{Gc} (majd a \texttt{Gc} eltűnt a 0.12 verzióban \cite{rust:version_history}.
 
 2014. januárjában, Andrew Binstock, a Dr Dobb's főszerkesztője, megemlítette a nyelvet, és megjegyezte, hogy van esélye versenyképesnek lenni a C++ mellett.
-Binstock szerint bár a Rust-ot sokan gondolták "kitűnően elegáns nyelvnek," a nyelv használata lelassult, mert gyakran változott verziók között.\cite{dr_dobb}
+Binstock szerint bár a Rust-ot sokan gondolták "kitűnően elegáns nyelvnek", a nyelv használata lelassult, mert gyakran változott verziók között \cite{dr_dobb}.
 
-A Stack Overflow weboldal éves kérdőíve szerint a Rust 2015-ben a harmadik legkedveltebb nyelv volt, majd a következő négy évben az első helyet foglalta el.\cite{so_2015, so_2016, so_2017, so_2018, so_2019}
+A \textit{Stack Overflow} weboldal éves kérdőíve szerint a Rust 2015-ben a harmadik legkedveltebb nyelv volt, majd a következő négy évben az első helyet foglalta el \cite{so_2015, so_2016, so_2017, so_2018, so_2019}.
 
 \Section{Összehasonlítás a C++ nyelvvel}
 
-A következőekben elemzünk néhány gyakori problémát illetve kihívást, ami feljöhet egy program fejlesztése során,
-és megvizsgáljuk, hogy hogyan kezeli a megadott feladatot a Rust és a C++, és hogy miben hasonlóak és különböznek.
+A következőkben elemzünk néhány gyakori problémát, illetve kihívást, amely felmerülhet egy program fejlesztése során,
+és megvizsgáljuk, hogy hogyan kezeli a megadott feladatot a Rust és a C++, és hogy miben hasonlítanak és különböznek ezek a megoldások.
 
 \SubSection{Költség nélküli absztrakció}
 
 Ha a kódban az absztrakció nem költség nélküli, akkor a programozó hajlamosabb a kód-duplikációra, hogy elkerülje a virtuális metódushívások magas árát.
-Ebben az esetben mindkettő nyelv lehetőséget ad költség nélküli absztrakcióra, ahol lehetséges.\cite{compare:cpp:zerocost, compare:rust:zerocost}
+Ebben az esetben mindkettő nyelv lehetőséget ad költség nélküli absztrakcióra, ahol lehetséges \cite{compare:cpp:zerocost, compare:rust:zerocost}.
+
+% TODO: Ezt egy kicsit részletesebben és pontosabban kellene!
 
 \SubSection{Mozgatás szemantikák}
 \label{subsec:ownership_mentioned}
 
-Mozgatás konstruktorok használata során felmerülhet az a probléma, hogy az az objektum, amiből az erőforrások ki lettek mozgatva,
-helytelen, vagy kiszámíthatatlan maradhat a mozgatás után, ezáltal "használat mozgatás után" (use-after-move) hibákat okozhat.
-A C++ nyelvben a mozgatók "elrabolják" az erőforrásokat az objektumoktól. Ajánlatos, hogy a forrás objektum helyes maradjon a mozgatás után,
-de nem kötelező, így javasolt nem bízni az objektum helyességében mozgatás után.\cite{compare:cpp:move_constructor}
-A Rust birtoklás rendszere és kölcsönzés-ellenőrző funkciója megakadályozza, hogy mozgatás után használhassunk objektumokat.\cite{compare:rust:move_constructor}
+% TODO: Le kellene írni, hogy egyáltalán mit jelent a move szemantika!
 
-A use-after-move hibákat a C++-ban vagy futásidőben lehet felfedezni egy speciális "sentinel" állapottal,
+Mozgatás konstruktorok használata során felmerülhet az a probléma, hogy az az objektum, amiből az erőforrások ki lettek mozgatva,
+helytelen, vagy kiszámíthatatlan maradhat a mozgatás után, ezáltal "használat mozgatás után" (\textit{use-after-move}) hibákat okozhat.
+A C++ nyelvben a mozgatók "elrabolják" az erőforrásokat az objektumoktól. Ajánlatos, hogy a forrás objektum helyes maradjon a mozgatás után,
+de nem kötelező, így javasolt nem bízni az objektum helyességében mozgatás után \cite{compare:cpp:move_constructor}.
+A Rust birtoklás rendszere és kölcsönzés-ellenőrző funkciója megakadályozza, hogy mozgatás után használhassunk objektumokat \cite{compare:rust:move_constructor}.
+
+A \textit{use-after-move} hibákat a C++-ban vagy futásidőben lehet felfedezni egy speciális "sentinel" állapottal,
 vagy külső, arra specializálódott programokkal fordítási időben.
 
-\SubSection{Mutatók}
+\SubSection{Mutatók és referenciák}
 
-Mindkét nyelv inkább az okos mutatókat és referenciákat preferálja, és a nyers mutatók használata ellen javasol -- 
-a Rust könyv meg is jegyzi, hogy az okos mutatók ötlete a C++-ból ered.\cite{compare:rust:smart_pointers}
+Mindkét nyelv inkább az okos mutatókat és referenciákat preferálja, és a nyers mutatók használata ellen javasol.
+A Rust könyv meg is jegyzi, hogy az okos mutatók ötlete a C++-ból ered \cite{compare:rust:smart_pointers}.
 
-Viszont, az, hogy hogy kezelik a nyers mutatókat, eltér. C++-ban nincs különösebb megoldás a nyers mutatók észrevételére,
+A mutatók kezelése a két nyelvben eltér. C++-ban nincs különösebb megoldás a nyers mutatók észrevételére,
 kivéve a manuális kódellenőrzést.
+
+% TODO: Külső eszközök, lint-ek azért vannak. A raw pointer önmagában nem okoz hibát, csak növeli az arra való hajlamot.
+
 A Rust ezzel ellentétben csak az \texttt{unsafe} kódblokkokban enged nyers mutatókat használni. 
-Az ilyen blokkok mindig meg vannak jelölve az \texttt{unsafe} megnevezéssel, így egy egyszerű keresés a fájlokban rámutat, hol lehetnek nyers mutatók.\cite{compare:rust:raw_pointers}
+Az ilyen blokkok mindig meg vannak jelölve az \texttt{unsafe} megnevezéssel, így egy egyszerű keresés a fájlokban rámutat, hogy hol lehetnek nyers mutatók \cite{compare:rust:raw_pointers}.
 
 \vskip\baselineskip
 
 Léteznek további különbségek is a két nyelv között, viszont egy alapos összehasonlítás ezen szakdolgozat hatáskörén kívülre esik.
-Egy bővebb összehasonlítás megtekinthető az irodalomjegyzékben megjelölt forrásban.\cite{rustvscpp}
+Egy bővebb összehasonlítás megtekinthető az irodalomjegyzékben megjelölt forrásban \cite{rustvscpp}.
 
-\Section{A Rust további egyedi tulajdonságai}
+\Section{Csomagok és függőségeik kezelése}
 \label{cargo_mention}
+
 A Cargo egy Rustban írt, és Rusthoz készült, csomagkezelő, és egyben egy fejlesztést elősegítő környezet.
-A Cargo segítségével automatikusan letölthetőek a szükséges dependenciák, kényelmesen lefordíthatóak a projektek,
-sőt, a Cargo lehetővé teszi a kész projekt feltöltését a Rust közösség csomaggyűjtő oldalára, a \url{crates.io} weboldalra is.\cite{cargo:doc}
+A Cargo segítségével automatikusan letölthetőek a szükséges függőségek, kényelmesen lefordíthatóak a projektek,
+sőt, a Cargo lehetővé teszi a kész projekt feltöltését a Rust közösség csomaggyűjtő oldalára, a \url{crates.io} weboldalra is \cite{cargo:doc}.
 
 A Cargo-t Carl Lerche és Yehuda Katz tervezte a Bundler és NPM mintájára. 
-A csomagkezelés bonyolult probléma, de annak köszönhetően, hogy a Cargo elődjei már kitapasztalták a gyakori fájdalompontokat,
-a Cargo egyszerűvé teszi a projektkezelést:\cite{cargo:blog}
-
+A csomagkezelés bonyolult probléma, de annak köszönhetően, hogy a Cargo elődjei már kitapasztalták a gyakori problémákat,
+a Cargo egyszerűbbé teszi a projektkezelést \cite{cargo:blog}. A használatának az előnyei például az alábbiak.
 \begin{itemize}
     \item A \url{crates.io} oldala könnyeddé teszi a projektek feltöltését. 
-    A feltöltéshez csak egy Github felhasználó szükséges, és a feltöltés folyamatát a \texttt{cargo publish} parancs
+    A feltöltéshez csak egy Github felhasználói fiók szükséges, és a feltöltés folyamatát a \texttt{cargo publish} parancs
     felhasználói beavatkozás nélkül véghezviszi.
-    
     \item Minden Cargo-t használó projekt függőségeit a Cargo egy \texttt{Cargo.lock} fájlban tárolja,
-    így biztosítva azt hogy mind az együttműködő fejlesztők, és mind a felhasználók ugyanazt a kódot fordítják.\cite{cargo:dependency_management}
-
-    \item Minden projekt megadhatja a Cargo-nak, hogy fordítsa azt, és a Cargo kezeli a függőségek lefordítását is
-    ugyanezen alapon.
+    így biztosítva azt, hogy mind az együttműködő fejlesztők, és mind a felhasználók ugyanazt a kódot fordítsák \cite{cargo:dependency_management}.
+    \item Minden projekt megadhatja a Cargo-nak, hogy fordítsa azt, és a Cargo kezeli a függőségek lefordítását is.
 \end{itemize}
-
 
 % TODO: Leírni a nyelv szerepét, létrejöttének történetét, jellemző felhasználási módjait!
 
