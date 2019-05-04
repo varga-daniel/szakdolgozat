@@ -2,57 +2,49 @@
 
 % TODO: A bevezetésnek egy 1-2 oldalas áttekintésnek kellene lennie (alpontok nélkül), amelyben inkább a motiváció és a témakör aktualitása szerepel csak.
 
-\Section{Integrált Fejlesztői Környezetek (IDE-k)}
+A Rust egy új, hardverközeli nyelv, ami az elmúlt években egyre nagyobb
+népszerűségre tett szert.
+A nyelvvel ismerkedő programozók között gyakori a más nyelvekben írt
+programok újraírása Rust-ban, illetve az új programok létrehozása,
+amik kihasználják javukra a Rust egyedi tulajdonságait.
+Nyilvánvaló így, hogy szükség van olyan programokra, amik elő- illetve megsegítik
+a Rust-ban történő programozást.
 
-Az integrált fejlesztői környezet, vagy röviden \emph{IDE} (az angol \emph{Integrated Development Environment} megnevezésből) 
-egy olyan szoftver, amely elősegíti a felhasználót (ez esetben elsősorban programozót) más szoftverek fejlesztésében. 
-Egy minimális IDE tartalmaz legalább egy forrásfájl-szerkesztőt, automatikus fordítási lehetőségeket, 
-és hibakereső eszközöket (\textit{debugger}-t). A mai IDE-k nagyszámú egyéb szolgáltatásokat is nyújtanak a felhasználónak.
-Például intelligens kódkiegészítést biztosítanak már az új kifejezés gépelésének megkezdésekor, támogatást adnak külső verziókövető szoftverekhez, illetve fordítást nem igénylő kódellenőrzést is végeznek a projektekben.
+A dolgozat célja, hogy a Rust nyelv említett egyedi tulajdonságait
+bemutassa az olvasónak, és ezt egy Rust-hoz íródott integrált fejlesztőkörnyezet
+létrehozásán keresztül tegye.
 
-Nyilvánvaló, hogy miért előnyös egy IDE létezése egy megadott nyelvhez. Az előzőekben felsorolt szolgáltatásokat fejlesztő környezet nélkül a programozó vagy csak különféle, egymáshoz nem feltétlenül integrált szoftverekkel érhetné el 
-(például nyelvspecifikus fordítóval, általános szövegszerkesztővel), 
-vagy nem érhetné el egyáltalán (mint például az intelligens kódkiegészítést).
+Fontos kiemelni, hogy hasonló projektek már léteztek ez előtt:
+ilyen például a \textit{SolidOak}\cite{solidoak} illetve a \textit{Ride}\cite{ride}.
+Az előző Github oldala archiválva lett, míg az utóbbi fejlesztője
+bejelentette, hogy a fejlesztés abbamaradt, így jelenleg a fejlesztőkörnyezet-fejlesztés
+Rust-ban egy kiaknázatlan terület.
+Továbbá a Rust felhasználói által nyilvántartott \textit{Are we (I)DE yet?}\cite{ideyet} oldal,
+ahol összegyűjtik a Rust fejlesztőkörnyezeteket, kódszerkesztőket, és azokat elősegítő programokat,
+nem említ más aktív projektet, ami e témában létezne.
 
-A szövegszerkesztőknél meg kell említenünk, hogy ma már a legtöbbjük intelligens eléggé ahhoz, 
-hogy egy IDE funkcióinak egy részét maguk is szolgáltatni tudják.
-Ilyen szövegszerkesztőket, és a támogatott funkcióikat a következő részben, \myaref{sec:ides} alfejezetben fogjuk megtekinteni. A dolgozat rámutat arra, hogy ezek a megoldások miért nem elégségesek.
+A következőekben bemutatom a Rust nyelvet, annak történetét, majd
+összehasonlítom a C++ nyelvvel, kiemelve a főbb eltéréseket a kettő között.
+A dolgozat feltételezi, hogy az olvasó minimális programozási tudással
+rendelkezik, de kiemeli a programozási praktikákat, amik inkább a Rust-ra
+jellemzőek, ezáltal tovább folytatva az összehasonlítást az fejlesztőkörnyezet
+megvalósítása során.
 
-\Section{Elérhető Rust fejlesztőkörnyezetek}
-\label{sec:ides}
+Ezek után bemutatom egy átlagos fejlesztőkörnyezet összetételét, és
+ezek alapján összeállítok egy specifikációt a dolgozathoz mellékelt
+program létrehozására.
 
-Mint azt már említettük, sok szövegszerkesztő ajánl IDE-szerű szolgáltatásokat Rust-hoz. 
-A Rust közössége ezeket le is jegyzi, és egy nyilvánosan elérhető, 
-\emph{Are we (I)DE yet?} című weboldalon összegezi \cite{ideyet}. A weboldalon láthatjuk a Rust-hoz elérhető legelterjedtebb szövegszerkesztőket, úgy mint például az \textit{Atom}, a \textit{Sublime Text} és a \textit{Visual Studio Code} nevű szerkesztőket. 
-A legutóbbi kiemelendő, mivel a funkciókat bemutató táblázat alapján látszólag minden meg van benne, ami alapelvárásként szerepelt egy fejlesztőkörnyezettel szemben.
+A megvalósítás során előállítok egy minimális programot, amivel a felhasználó
+egy grafikus felület használatával tud kommunikálni,
+majd ezt a programot dolgozom tovább egy fejlesztőkörnyezet megközelítéséhez.
 
-A szövegszerkesztők egyszerre több nyelvhez tudnak ilyen szolgáltatásokat nyújtani. 
-Bár néhány szolgáltatás a szövegszerkesztőtől magától függ csak, a legtöbbhöz segítséget nyújt egy \emph{nyelvszerver} (\emph{language server}). 
-A nyelvszerver egy olyan szoftver, ami a \emph{nyelvszerver protokoll} alapján információt nyújt IDE-knek, szövegszerkesztőknek, és egyéb programoknak a hozzá tartozó nyelvről \cite{lsp}.
+Mindezek alatt kiemelem, hogy az éppen használt módszer miért előnyös
+vagy hátrányos a Rust nyelvben, milyen alternatíváink léteznek, és
+miért nem ezeket az alternatívákat használtam.
 
-Mivel a szövegszerkesztők bármilyen nyelvhez támogatást nyújthatnak egy közös protokoll által, így nyilvánvaló, hogy bármilyen szolgáltatás, ami a protokollon kívül esik, nem lesz elérhető egy nyelvhez sem. 
-Van továbbá néhány funkció, amit viszont a szövegszerkesztőtől magától nem várhatunk el. Ilyen például egy grafikus szerkesztő, amivel szerkeszthetjük az alkalmazásunk grafikus felhasználói felületének elemeit, messze áll a szövegszerkesztéstől, és nehezen értelmezhető programozási nyelvtől van környezettől függetlenül egy szövegszerkesztőben. 
-Ne feledjük, hogy a nyelvtámogatás maga csak egy mellékfunkció.
-A szövegszerkesztő attól függetlenül szöveget még mindig tud szerkeszteni.
-
-Egy másik megoldás, amit észrevehetünk az említett weboldalon, az az, hogy a Rust támogatást meglévő IDE-kbe építjük bele, mint például az \textit{Eclipse}, \textit{IntelliJ IDEA}, vagy \textit{Visual Studio} fejlesztőkörnyezetekbe. 
-Bár azt gondolnánk, hogy ez közelebb áll a célunkhoz, valójában néhány szempontból pontosan annak az ellentéte igaz. Ilyen esetben a Rust, mint másodrendű nyelv kerül bele az alkalmazásba.
-\textit{Eclipse} és \textit{IntelliJ IDEA} esetén a Java alá, \textit{Visual Studio} esetén a C\# alá főként. 
-Észrevehetjük, hogy támogatás szempontjából nem a nyelvi támogatás lett komplexebb, hanem a szoftver maga.
-A Rust szempontjából egy 'felturbózott' szövegszerkesztővel dolgozunk, és nem egy IDE-vel.
-
-Legutoljára láthatjuk, hogy a Rust-hoz készült már néhány IDE. Ezek például a \emph{Ride} \cite{ride} és a \emph{SolidOak} \cite{solidoak}. 
-Sajnálatos módon ezek sem felelnek meg a követelményeinknek. Nem csak, hogy mindkettő gyérebb a funkcionalitás oldalon, mint egy mezei szövegszerkesztő, de továbbá mindkét projekt halott is. 
-A szakdolgozat írása idejében a \textit{Ride} legutolsó módosítása a projekt megszüntetésének bejelentése, és nem ajánlott produkciós környezetben, a \textit{SolidOak} Github oldala pedig archiválva lett.
-
-\Section{Egy Rust IDE fejlesztése}
-
-Az előző elemzésekből kitűnhet, hogy nyelvi szinten a Rust készen áll már akár most is egy Rust-centrikus fejlesztőkörnyezetre. 
-%Továbbá, a Rust Forge oldalán látható, hogy tervekben áll\footnote{\texttt{https://forge.rust-lang.org/ides.html}} egy hivatalos daemon fejlesztése, ami tovább segíteni a leendő IDE-k munkáját egy Rust projekt kezelésében, és a lefordító módosítása, hogy támogassa az inkrementális és lusta fordítást, és hogy különféle hibák ellenére is végigmenjen a fordítási folyamaton.
-A feladat így elsősorban egy olyan fejlesztőkörnyezet létrehozása, amely a Rust-ot elsőrendű nyelvként kezeli, figyelembe veszi annak speciális vonásait.
-Fontos, hogy az IDE kényelmessé tegye a nyelvben való programozást, így a fejlesztés során gyakori kell, hogy legyen az iterálás a felhasználó munkamenetén. 
-Fejleszteni kell majd olyan szolgáltatásokat, amelyek könnyebbé teszik a nyelv sajátosságainak megértését, például a hivatkozások élettartamának nyomon követését 
-(ezeket a sajátosságokat \myaref{sec:rust} fejezet mutatja majd be bővebben), és amelyek figyelmeztetnek a gyakori Rust programozási hibákra.
+Végül, a dolgozat végén tesztként a programot saját magán futtatom, azaz felhasználom
+a dolgozat alatt elkészített fejlesztői környezetet, hogy azt
+szerkesszem, lefordítsam, és futtassam.
 
 % TODO: Itt egy olyan leírásnak kellene majd szerepelnie, ami felhívja az olvasó figyelmét, hogy
 % - milyen fontos, hogy legyen ilyen IDE,
